@@ -4,8 +4,8 @@ import os
 from threading import Thread
 from flask import Flask
 from telegram import Bot
+from telegram.constants import ParseMode
 
-# Render Port Taraması İçin Web Sunucusu
 app = Flask('')
 
 @app.route('/')
@@ -21,55 +21,118 @@ def keep_alive():
     t.daemon = True
     t.start()
 
-# TELEGRAM BOT KODLARI
 TOKEN = '8978792663:AAFEmc5qriY8a4tuX05yxzARfEr5KgwIMM0'
-
-# DOĞRU KANAL ID'Sİ
 CHAT_ID = -1004315557168
 
 async def main():
     bot = Bot(token=TOKEN)
-    hedef_tarih = datetime.datetime(2026, 8, 25, 0, 0, 0)
     message_id = None
 
     while True:
         try:
             simdi = datetime.datetime.now()
-            fark = hedef_tarih - simdi
+            
+            # Bugünün tarihini alıp saatleri sabitliyoruz
+            bugun_11 = simdi.replace(hour=11, minute=0, second=0, microsecond=0)
+            bugun_13 = simdi.replace(hour=13, minute=0, second=0, microsecond=0)
 
-            if fark.total_seconds() > 0:
-                gun = fark.days
-                saat, artan = divmod(fark.seconds, 3600)
-                dakika, saniye = divmod(artan, 60)
-                kalan_sure = f"{gun}g, {saat}s, {dakika}d, {saniye}s"
-            else:
-                kalan_sure = "Süre doldu!"
+            # TÜM HESAPLARIN TANIMI
+            hesaplar = [
+                {
+                    "isim": "Hesap 1",
+                    "link": "https://t.me/kabusxkira/3",
+                    "durum": "musait"
+                },
+                {
+                    "isim": "Hesap 2",
+                    "link": "https://t.me/kabusxkira/10",
+                    "durum": "ekstra_gece",
+                    "bitis": bugun_13
+                },
+                {
+                    "isim": "Hesap 3",
+                    "link": "https://t.me/kabusxkira/12",
+                    "durum": "gece",
+                    "bitis": bugun_11
+                },
+                {
+                    "isim": "Hesap 4",
+                    "link": "https://t.me/kabusxkira/14",
+                    "durum": "ekstra_gece",
+                    "bitis": bugun_13
+                },
+                {
+                    "isim": "Hesap 5",
+                    "link": "https://t.me/kabusxkira/19",
+                    "durum": "gece",
+                    "bitis": bugun_11
+                },
+                {
+                    "isim": "Hesap 6",
+                    "link": "https://t.me/kabusxkira/22",
+                    "durum": "ekstra_gece",
+                    "bitis": bugun_13
+                }
+            ]
 
+            musait_listesi = []
+            mesgul_listesi = []
+
+            for h in hesaplar:
+                satir_link = f'<a href="{h["link"]}">{h["isim"]}</a>'
+                
+                # Müsait hesaplar
+                if h["durum"] == "musait":
+                    musait_listesi.append(f"  {satir_link}")
+                
+                # Gece Paketleri Kontrolü
+                elif h["durum"] in ["gece", "ekstra_gece"]:
+                    # Süresi bitti mi kontrol et
+                    if simdi >= h["bitis"]:
+                        # Süre bittiyse otomatik Müsait listesine geçer
+                        musait_listesi.append(f"  {satir_link}")
+                    else:
+                        # Süre bitmediyse Meşgul listesinde kalır
+                        metin = "Gece Paketi Devrede" if h["durum"] == "gece" else "Ekstra Gece Paketi Devrede"
+                        mesgul_listesi.append(f"  {satir_link} - {metin}")
+
+            # Müsait veya meşgul listesi boşsa şık dursun diye kontrol
+            musait_metin = "\n".join(musait_listesi) if musait_listesi else "  Şu an müsait hesap yok."
+            mesgul_metin = "\n".join(mesgul_listesi) if mesgul_listesi else "  Şu an meşgul hesap yok."
+
+            # TELEGRAM MESAJ TASARIMI
             metin = (
-                "KABUS RENT\n\n"
+                "<b>KABUS RENT</b>\n\n"
                 "┌───────────────────┐\n"
-                "  🟢 Müsait Hesaplar\n"
+                "  🟢 <b>Müsait Hesaplar</b>\n"
                 "└───────────────────┘\n\n"
-                "  Hesap 1\n"
-                "  Hesap 2\n"
-                "  Hesap 3\n"
-                "  Hesap 4\n"
-                "  Hesap 5\n\n"
+                f"{musait_metin}\n\n"
                 "┌───────────────────┐\n"
-                "  🔴 Meşgul Hesaplar\n"
+                "  🔴 <b>Meşgul Hesaplar</b>\n"
                 "└───────────────────┘\n\n"
-                f"  Hesap 6 - {kalan_sure} kaldı.\n\n"
-                f"⏱ Son Güncelleme: {datetime.datetime.now().strftime('%d.%m.%Y %H:%M:%S')}\n\n"
+                f"{mesgul_metin}\n\n"
+                f"⏱ <i>Son Güncelleme: {simdi.strftime('%d.%m.%Y %H:%M:%S')}</i>\n\n"
                 "Hesap no'ların üzerine tıklayarak hesaplara hızlı bir şekilde ulaşabilirsiniz.\n\n"
                 "Hemen kiralamak için;\n"
                 "✅ @btkabus"
             )
 
             if message_id is None:
-                msg = await bot.send_message(chat_id=CHAT_ID, text=metin)
+                msg = await bot.send_message(
+                    chat_id=CHAT_ID,
+                    text=metin,
+                    parse_mode=ParseMode.HTML,
+                    disable_web_page_preview=True
+                )
                 message_id = msg.message_id
             else:
-                await bot.edit_message_text(chat_id=CHAT_ID, message_id=message_id, text=metin)
+                await bot.edit_message_text(
+                    chat_id=CHAT_ID,
+                    message_id=message_id,
+                    text=metin,
+                    parse_mode=ParseMode.HTML,
+                    disable_web_page_preview=True
+                )
 
         except Exception as e:
             print(f"HATA: {e}")
