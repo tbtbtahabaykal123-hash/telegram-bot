@@ -28,13 +28,10 @@ CHAT_ID = -1004315557168
 async def main():
     bot = Bot(token=TOKEN)
     message_id = None
-
-    # Türkiye Saat Dilimi (UTC+3)
     tr_tz = timezone(timedelta(hours=3))
 
     while True:
         try:
-            # Türkiye saatine göre şu anki zaman
             simdi = datetime.datetime.now(tr_tz)
             
             bugun_11 = simdi.replace(hour=11, minute=0, second=0, microsecond=0)
@@ -85,10 +82,31 @@ async def main():
             )
 
             if message_id is None:
-                msg = await bot.send_message(chat_id=CHAT_ID, text=metin, parse_mode=ParseMode.HTML, disable_web_page_preview=True)
+                msg = await bot.send_message(
+                    chat_id=CHAT_ID,
+                    text=metin,
+                    parse_mode=ParseMode.HTML,
+                    disable_web_page_preview=True
+                )
                 message_id = msg.message_id
             else:
-                await bot.edit_message_text(chat_id=CHAT_ID, message_id=message_id, text=metin, parse_mode=ParseMode.HTML, disable_web_page_preview=True)
+                try:
+                    await bot.edit_message_text(
+                        chat_id=CHAT_ID,
+                        message_id=message_id,
+                        text=metin,
+                        parse_mode=ParseMode.HTML,
+                        disable_web_page_preview=True
+                    )
+                except Exception as edit_err:
+                    print(f"Edit hatasi, yeni mesaj atiliyor: {edit_err}")
+                    msg = await bot.send_message(
+                        chat_id=CHAT_ID,
+                        text=metin,
+                        parse_mode=ParseMode.HTML,
+                        disable_web_page_preview=True
+                    )
+                    message_id = msg.message_id
 
         except Exception as e:
             print(f"HATA: {e}")
