@@ -1,7 +1,11 @@
+import asyncio
+import datetime
 import os
 from threading import Thread
 from flask import Flask
+from telegram import Bot
 
+# Render Port Taramasını Geçmek İçin Web Sunucusu
 app = Flask('')
 
 
@@ -17,42 +21,51 @@ def run():
 
 def keep_alive():
   t = Thread(target=run)
-  t.start()import asyncio
-import datetime
-from telegram import Bot
+  t.start()
 
-TOKEN = "8978792663:AAFEmc5qriY8a4tuX05yxzARfEr5KgwIMMO"
-CHAT_ID = "@kabusxkira"
+
+# TELEGRAM BOT KODLARI
+TOKEN = '8978792663:AAFEmc5qriY8a4tuX05yxzARfEr5KgwIMM0'
+CHAT_ID = -1002247545043
 MESSAGE_ID = 23
 
 bot = Bot(token=TOKEN)
 
+
 async def main():
-    bitis_zamani = datetime.datetime.now() + datetime.timedelta(days=7, hours=22)
+  hedef_tarih = datetime.datetime(2026, 8, 25, 0, 0, 0)
 
-    while True:
-        try:
-            kalan = bitis_zamani - datetime.datetime.now()
-            gun = kalan.days
-            saat, artan = divmod(kalan.seconds, 3600)
-            dakika, saniye = divmod(artan, 60)
+  while True:
+    try:
+      simdi = datetime.datetime.now()
+      fark = hedef_tarih - simdi
 
-            metin = (
-                f"🟢 **Müsait Hesaplar**\nHesap 6\n\n"
-                f"🔴 **Meşgul Hesaplar**\n"
-                f"Hesap 1 - {gun}g, {saat}s, {dakika}d, {saniye}s kaldı.\n\n"
-                f"🕒 *Son Güncelleme:* {datetime.datetime.now().strftime('%d.%m.%Y %H:%M:%S')}"
-            )
+      if fark.total_seconds() > 0:
+        gun = fark.days
+        saat, artan = divmod(fark.seconds, 3600)
+        dakika, saniye = divmod(artan, 60)
 
-            await bot.edit_message_text(
-                chat_id=CHAT_ID,
-                message_id=MESSAGE_ID,
-                text=metin,
-                parse_mode="Markdown"
-            )
-        except Exception as e:
-            print(f"Hata: {e}")
-            
-        await asyncio.sleep(5)
+        metin = (
+            f'🟢 **Müsait Hesaplar**\nHesap 6\n\n'
+            f'🔴 **Meşgul Hesaplar**\n'
+            f'Hesap 1 - {gun}g, {saat}s, {dakika}d, {saniye}s kaldı.\n\n'
+            f'🕒 *Son Güncelleme:* {datetime.datetime.now().strftime("%d.%m.%Y %H:%M:%S")}'
+        )
+      else:
+        metin = 'Süre doldu!'
 
-asyncio.run(main())
+      await bot.edit_message_text(
+          chat_id=CHAT_ID,
+          message_id=MESSAGE_ID,
+          text=metin,
+          parse_mode='Markdown',
+      )
+    except Exception as e:
+      print(f'Hata: {e}')
+
+    await asyncio.sleep(5)
+
+
+if __name__ == '__main__':
+  keep_alive()
+  asyncio.run(main())
