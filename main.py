@@ -24,15 +24,13 @@ def keep_alive():
 # TELEGRAM BOT KODLARI
 TOKEN = '8978792663:AAFEmc5qriY8a4tuX05yxzARfEr5KgwIMM0'
 
-# Kanalın kullanıcı adı (ID hatasını çözer)
-CHAT_ID = '@btkabus'  # Eğer kanal adı farklıysa buraya @kanaladi şeklinde yaz
+# DOĞRU KANAL ID'Sİ
+CHAT_ID = -1004315557168
 
 async def main():
     bot = Bot(token=TOKEN)
     hedef_tarih = datetime.datetime(2026, 8, 25, 0, 0, 0)
     message_id = None
-
-    print("--- DÖNGÜ BAŞLADI ---")
 
     while True:
         try:
@@ -70,13 +68,11 @@ async def main():
             if message_id is None:
                 msg = await bot.send_message(chat_id=CHAT_ID, text=metin)
                 message_id = msg.message_id
-                print(f"BAŞARILI! Yeni mesaj atıldı. ID: {message_id}")
             else:
                 await bot.edit_message_text(chat_id=CHAT_ID, message_id=message_id, text=metin)
-                print("Mesaj canlı güncellendi.")
 
         except Exception as e:
-            print(f"HATA ALINDI: {e}")
+            print(f"HATA: {e}")
 
         await asyncio.sleep(5)
 
