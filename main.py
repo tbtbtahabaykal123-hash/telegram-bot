@@ -1,11 +1,11 @@
 import asyncio
 import datetime
 import os
-import traceback
 from threading import Thread
 from flask import Flask
 from telegram import Bot
 
+# Render Port Taraması İçin Web Sunucusu
 app = Flask('')
 
 @app.route('/')
@@ -21,23 +21,18 @@ def keep_alive():
     t.daemon = True
     t.start()
 
+# TELEGRAM BOT KODLARI
 TOKEN = '8978792663:AAFEmc5qriY8a4tuX05yxzARfEr5KgwIMM0'
-CHAT_ID = -1002247545043
 
-async def update_loop():
+# Kanalın kullanıcı adı (ID hatasını çözer)
+CHAT_ID = '@btkabus'  # Eğer kanal adı farklıysa buraya @kanaladi şeklinde yaz
+
+async def main():
     bot = Bot(token=TOKEN)
-    print("--- BOT CALISMAYA BASLADI ---")
-    
-    # Token doğru mu kontrol
-    try:
-        me = await bot.get_me()
-        print(f"Bot Baglandi: {me.username}")
-    except Exception as e:
-        print(f"TOKEN HATASI: {e}")
-        return
-
     hedef_tarih = datetime.datetime(2026, 8, 25, 0, 0, 0)
     message_id = None
+
+    print("--- DÖNGÜ BAŞLADI ---")
 
     while True:
         try:
@@ -73,20 +68,18 @@ async def update_loop():
             )
 
             if message_id is None:
-                print(f"Mesaj gonderilmeye calisiliyor... CHAT_ID: {CHAT_ID}")
                 msg = await bot.send_message(chat_id=CHAT_ID, text=metin)
                 message_id = msg.message_id
-                print(f"BAŞARILI! Yeni Message ID: {message_id}")
+                print(f"BAŞARILI! Yeni mesaj atıldı. ID: {message_id}")
             else:
                 await bot.edit_message_text(chat_id=CHAT_ID, message_id=message_id, text=metin)
-                print("Mesaj guncellendi.")
+                print("Mesaj canlı güncellendi.")
 
         except Exception as e:
-            print(f"TELEGRAM HATASI: {e}")
-            traceback.print_exc()
+            print(f"HATA ALINDI: {e}")
 
         await asyncio.sleep(5)
 
 if __name__ == '__main__':
     keep_alive()
-    asyncio.run(update_loop())
+    asyncio.run(main())
