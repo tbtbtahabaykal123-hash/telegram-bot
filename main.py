@@ -1,7 +1,6 @@
 import asyncio
 import datetime
 import os
-from zoneinfo import ZoneInfo
 from threading import Thread
 from flask import Flask
 from telegram import Bot
@@ -29,11 +28,10 @@ async def main():
     bot = Bot(token=TOKEN)
     message_id = None
 
-    tr_tz = ZoneInfo("Europe/Istanbul")
-
     while True:
         try:
-            simdi = datetime.datetime.now(tr_tz)
+            # Sunucu saatine +3 saat ekleyip Türkiye saatini garantiye alıyoruz
+            simdi = datetime.datetime.utcnow() + datetime.timedelta(hours=3)
             
             bugun_11 = simdi.replace(hour=11, minute=0, second=0, microsecond=0)
             bugun_13 = simdi.replace(hour=13, minute=0, second=0, microsecond=0)
