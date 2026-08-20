@@ -1,6 +1,7 @@
 import asyncio
 import datetime
 import os
+from zoneinfo import ZoneInfo
 from threading import Thread
 from flask import Flask
 from telegram import Bot
@@ -28,51 +29,22 @@ async def main():
     bot = Bot(token=TOKEN)
     message_id = None
 
+    tr_tz = ZoneInfo("Europe/Istanbul")
+
     while True:
         try:
-            simdi = datetime.datetime.now()
+            simdi = datetime.datetime.now(tr_tz)
             
-            # Bugünün tarihini alıp saatleri sabitliyoruz
             bugun_11 = simdi.replace(hour=11, minute=0, second=0, microsecond=0)
             bugun_13 = simdi.replace(hour=13, minute=0, second=0, microsecond=0)
 
-            # TÜM HESAPLARIN TANIMI
             hesaplar = [
-                {
-                    "isim": "Hesap 1",
-                    "link": "https://t.me/kabusxkira/3",
-                    "durum": "musait"
-                },
-                {
-                    "isim": "Hesap 2",
-                    "link": "https://t.me/kabusxkira/10",
-                    "durum": "ekstra_gece",
-                    "bitis": bugun_13
-                },
-                {
-                    "isim": "Hesap 3",
-                    "link": "https://t.me/kabusxkira/12",
-                    "durum": "gece",
-                    "bitis": bugun_11
-                },
-                {
-                    "isim": "Hesap 4",
-                    "link": "https://t.me/kabusxkira/14",
-                    "durum": "ekstra_gece",
-                    "bitis": bugun_13
-                },
-                {
-                    "isim": "Hesap 5",
-                    "link": "https://t.me/kabusxkira/19",
-                    "durum": "gece",
-                    "bitis": bugun_11
-                },
-                {
-                    "isim": "Hesap 6",
-                    "link": "https://t.me/kabusxkira/22",
-                    "durum": "ekstra_gece",
-                    "bitis": bugun_13
-                }
+                {"isim": "Hesap 1", "link": "https://t.me/kabusxkira/3", "durum": "musait"},
+                {"isim": "Hesap 2", "link": "https://t.me/kabusxkira/10", "durum": "ekstra_gece", "bitis": bugun_13},
+                {"isim": "Hesap 3", "link": "https://t.me/kabusxkira/12", "durum": "gece", "bitis": bugun_11},
+                {"isim": "Hesap 4", "link": "https://t.me/kabusxkira/14", "durum": "ekstra_gece", "bitis": bugun_13},
+                {"isim": "Hesap 5", "link": "https://t.me/kabusxkira/19", "durum": "gece", "bitis": bugun_11},
+                {"isim": "Hesap 6", "link": "https://t.me/kabusxkira/22", "durum": "ekstra_gece", "bitis": bugun_13}
             ]
 
             musait_listesi = []
@@ -81,26 +53,19 @@ async def main():
             for h in hesaplar:
                 satir_link = f'<a href="{h["link"]}">{h["isim"]}</a>'
                 
-                # Müsait hesaplar
                 if h["durum"] == "musait":
                     musait_listesi.append(f"  {satir_link}")
                 
-                # Gece Paketleri Kontrolü
                 elif h["durum"] in ["gece", "ekstra_gece"]:
-                    # Süresi bitti mi kontrol et
                     if simdi >= h["bitis"]:
-                        # Süre bittiyse otomatik Müsait listesine geçer
                         musait_listesi.append(f"  {satir_link}")
                     else:
-                        # Süre bitmediyse Meşgul listesinde kalır
                         metin = "Gece Paketi Devrede" if h["durum"] == "gece" else "Ekstra Gece Paketi Devrede"
                         mesgul_listesi.append(f"  {satir_link} - {metin}")
 
-            # Müsait veya meşgul listesi boşsa şık dursun diye kontrol
             musait_metin = "\n".join(musait_listesi) if musait_listesi else "  Şu an müsait hesap yok."
             mesgul_metin = "\n".join(mesgul_listesi) if mesgul_listesi else "  Şu an meşgul hesap yok."
 
-            # TELEGRAM MESAJ TASARIMI
             metin = (
                 "<b>KABUS RENT</b>\n\n"
                 "┌───────────────────┐\n"
@@ -118,21 +83,10 @@ async def main():
             )
 
             if message_id is None:
-                msg = await bot.send_message(
-                    chat_id=CHAT_ID,
-                    text=metin,
-                    parse_mode=ParseMode.HTML,
-                    disable_web_page_preview=True
-                )
+                msg = await bot.send_message(chat_id=CHAT_ID, text=metin, parse_mode=ParseMode.HTML, disable_web_page_preview=True)
                 message_id = msg.message_id
             else:
-                await bot.edit_message_text(
-                    chat_id=CHAT_ID,
-                    message_id=message_id,
-                    text=metin,
-                    parse_mode=ParseMode.HTML,
-                    disable_web_page_preview=True
-                )
+                await bot.edit_message_text(chat_id=CHAT_ID, message_id=message_id, text=metin, parse_mode=ParseMode.HTML, disable_web_page_preview=True)
 
         except Exception as e:
             print(f"HATA: {e}")
