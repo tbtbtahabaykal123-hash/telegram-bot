@@ -1,11 +1,11 @@
 import asyncio
 import datetime
 import os
+import traceback
 from threading import Thread
 from flask import Flask
 from telegram import Bot
 
-# Render Port Taramasını Geçmek İçin Web Sunucusu
 app = Flask('')
 
 @app.route('/')
@@ -21,12 +21,21 @@ def keep_alive():
     t.daemon = True
     t.start()
 
-# TELEGRAM BOT KODLARI
 TOKEN = '8978792663:AAFEmc5qriY8a4tuX05yxzARfEr5KgwIMM0'
 CHAT_ID = -1002247545043
 
 async def update_loop():
     bot = Bot(token=TOKEN)
+    print("--- BOT CALISMAYA BASLADI ---")
+    
+    # Token doğru mu kontrol
+    try:
+        me = await bot.get_me()
+        print(f"Bot Baglandi: {me.username}")
+    except Exception as e:
+        print(f"TOKEN HATASI: {e}")
+        return
+
     hedef_tarih = datetime.datetime(2026, 8, 25, 0, 0, 0)
     message_id = None
 
@@ -63,17 +72,18 @@ async def update_loop():
                 "✅ @btkabus"
             )
 
-            # Ilk calismada kanala yeni mesaj atar
             if message_id is None:
+                print(f"Mesaj gonderilmeye calisiliyor... CHAT_ID: {CHAT_ID}")
                 msg = await bot.send_message(chat_id=CHAT_ID, text=metin)
                 message_id = msg.message_id
-                print(f"Yeni mesaj atildi! Message ID: {message_id}")
+                print(f"BAŞARILI! Yeni Message ID: {message_id}")
             else:
-                # Sonraki döngülerde atılan yeni mesajı sürekli günceller
                 await bot.edit_message_text(chat_id=CHAT_ID, message_id=message_id, text=metin)
+                print("Mesaj guncellendi.")
 
         except Exception as e:
-            print(f"Hata olustu: {e}")
+            print(f"TELEGRAM HATASI: {e}")
+            traceback.print_exc()
 
         await asyncio.sleep(5)
 
