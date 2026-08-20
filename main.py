@@ -4,7 +4,7 @@ from telegram import Bot
 
 TOKEN = "8978792663:AAFEmc5qriY8a4tuX05yxzARfEr5KgwIMMO"
 CHAT_ID = "@kabusxkira"
-MESSAGE_ID = 4
+MESSAGE_ID = 23
 
 bot = Bot(token=TOKEN)
 
