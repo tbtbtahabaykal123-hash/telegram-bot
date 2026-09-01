@@ -19,28 +19,26 @@ def update_telegram_message():
     time_str = time.strftime('%d.%m.%Y %H:%M:%S', now)
     
     # 1. Gece Paketi Mantığı (Saat 10:00'da Müsait olur)
-    # Hesap 3, Hesap 5
-    if current_hour >= 10:
-        gece_status = "musait"
-    else:
-        gece_status = "mesgul"
+    # Hesap 1, Hesap 3, Hesap 5
+    gece_status = "musait" if current_hour >= 10 else "mesgul"
 
     # 2. Ekstra Gece Paketi Mantığı (Saat 13:00'da Müsait olur)
-    # Hesap 2, Hesap 4, Hesap 6, Hesap 7
-    if current_hour >= 13:
-        ekstra_status = "musait"
-    else:
-        ekstra_status = "mesgul"
+    # Hesap 4, Hesap 6, Hesap 7
+    ekstra_status = "musait" if current_hour >= 13 else "mesgul"
 
     # Dinamik Liste Oluşturma
     musait_hesaplar = [
-        "[Hesap 1](https://t.me/kabusxkira/3)",
         "[Hesap 8](https://t.me/kabusxkira/40)"
     ]
-    mesgul_hesaplar = []
+    
+    # Özel Süreli Meşgul Hesaplar (Sabit Meşgul)
+    mesgul_hesaplar = [
+        "[Hesap 2](https://t.me/kabusxkira/10) - 1 Gün 5 Saat 29 Dk Var"
+    ]
 
-    # Gece Paketi Hesapları Kontrolü
+    # Gece Paketi Hesapları Kontrolü (1, 3, 5)
     gece_list = [
+        ("[Hesap 1](https://t.me/kabusxkira/3)", "Gece Paketi Devrede"),
         ("[Hesap 3](https://t.me/kabusxkira/12)", "Gece Paketi Devrede"),
         ("[Hesap 5](https://t.me/kabusxkira/19)", "Gece Paketi Devrede")
     ]
@@ -50,9 +48,8 @@ def update_telegram_message():
         else:
             mesgul_hesaplar.append(f"{link} - {label}")
 
-    # Ekstra Gece Paketi Hesapları Kontrolü
+    # Ekstra Gece Paketi Hesapları Kontrolü (4, 6, 7)
     ekstra_list = [
-        ("[Hesap 2](https://t.me/kabusxkira/10)", "Ekstra Gece Paketi Devrede"),
         ("[Hesap 4](https://t.me/kabusxkira/14)", "Ekstra Gece Paketi Devrede"),
         ("[Hesap 6](https://t.me/kabusxkira/22)", "Ekstra Gece Paketi Devrede"),
         ("[Hesap 7](https://t.me/kabusxkira/34)", "Ekstra Gece Paketi Devrede")
