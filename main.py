@@ -1,21 +1,22 @@
 import os
 import time
 import requests
-import threading
 from flask import Flask
+from threading import Thread
 
 app = Flask(__name__)
 
-@app.route('/')
-def home():
-    return "OK"
-
+# TELEGRAM AYARLARI
 BOT_TOKEN = "8897902804:AAEdFWs9V41gcUipSrE0_n6LPpAz5VOh5D0"
 CHANNEL_ID = "@kabusxkira"
 MESSAGE_ID = 47
 
-def update_loop():
-    time.sleep(3)
+@app.route('/')
+def home():
+    return "Bot Aktif"
+
+def telegram_loop():
+    print("--- DÖNGÜ VE TELEGRAM İSTEĞİ BAŞLADI ---")
     while True:
         try:
             now_ts = time.time() + (3 * 3600)
@@ -59,15 +60,15 @@ Hemen kiralamak için;
                 "disable_web_page_preview": True
             }
             res = requests.post(url, json=payload, timeout=10)
-            print("TELEGRAM CEVAP:", res.json())
+            print("TELEGRAM SONUCU:", res.json())
         except Exception as e:
-            print("HATA:", e)
+            print("TELEGRAM HATA:", e)
             
         time.sleep(60)
 
-# KOD DOSYASI YÜKLENDİĞİ AN DÖNGÜYÜ BAŞLAT (Web sunucusundan bağımsız)
-threading.Thread(target=update_loop, daemon=True).start()
+# Arka plan iş parçacığını doğrudan başlat
+Thread(target=telegram_loop, daemon=True).start()
 
 if __name__ == "__main__":
-    port = int(os.environ.get('PORT', 8080))
-    app.run(host='0.0.0.0', port=port)
+    port = int(os.environ.get("PORT", 10000))
+    app.run(host="0.0.0.0", port=port)
