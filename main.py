@@ -15,10 +15,10 @@ def run_flask():
     port = int(os.environ.get('PORT', 8080))
     app.run(host='0.0.0.0', port=port)
 
-# TELEGRAM BOT VE KANAL AYARLARI (HEPSİ DÜZELTİLDİ)
+# TELEGRAM BOT VE KANAL AYARLARI
 BOT_TOKEN = "8897902804:AAEdFWs9V41gcUipSrE0_n6LPpAz5VOh5D0"
-CHANNEL_ID = "@kabusxkira"  # Kanal adın güncellendi
-MESSAGE_ID = 47            # 47 ID'li mesaj ayarlandı
+CHANNEL_ID = "@kabusxkira"
+MESSAGE_ID = 47
 
 def generate_status_text():
     now = time.gmtime(time.time() + 3 * 3600)
@@ -30,19 +30,19 @@ def generate_status_text():
   🟢 Müsait Hesaplar
 └──────────────────────┘
 
-[Hesap 1](https://t.me/kabusxkira/33)
+[Hesap 1](https://t.me/kabusxkira/3)
 [Hesap 8](https://t.me/kabusxkira/40)
 
 ┌──────────────────────┐
   🔴 Meşgul Hesaplar
 └──────────────────────┘
 
-[Hesap 2](https://t.me/kabusxkira/34) - Ekstra Gece Paketi Devrede
-[Hesap 3](https://t.me/kabusxkira/35) - Gece Paketi Devrede
-[Hesap 4](https://t.me/kabusxkira/36) - Ekstra Gece Paketi Devrede
-[Hesap 5](https://t.me/kabusxkira/37) - Gece Paketi Devrede
-[Hesap 6](https://t.me/kabusxkira/38) - Ekstra Gece Paketi Devrede
-[Hesap 7](https://t.me/kabusxkira/39) - Ekstra Gece Paketi Devrede
+[Hesap 2](https://t.me/kabusxkira/10) - Ekstra Gece Paketi Devrede
+[Hesap 3](https://t.me/kabusxkira/12) - Gece Paketi Devrede
+[Hesap 4](https://t.me/kabusxkira/14) - Ekstra Gece Paketi Devrede
+[Hesap 5](https://t.me/kabusxkira/19) - Gece Paketi Devrede
+[Hesap 6](https://t.me/kabusxkira/22) - Ekstra Gece Paketi Devrede
+[Hesap 7](https://t.me/kabusxkira/34) - Ekstra Gece Paketi Devrede
 
 ⏱️ Son Güncelleme: {time_str}
 
@@ -62,7 +62,7 @@ def update_message():
     }
     try:
         res = requests.post(url, json=payload, timeout=10)
-        print("Güncelleme sonucu:", res.json())
+        print("Güncelleme yanıtı:", res.json())
     except Exception as e:
         print(f"Hata: {e}")
 
