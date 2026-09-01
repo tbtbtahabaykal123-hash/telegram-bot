@@ -8,21 +8,22 @@ app = Flask(__name__)
 
 @app.route('/')
 def home():
-    return "Bot Calisiyor"
+    return "Bot Aktif"
 
 def run_web():
     port = int(os.environ.get('PORT', 8080))
     app.run(host='0.0.0.0', port=port)
 
-# AYARLAR
 BOT_TOKEN = "8897902804:AAEdFWs9V41gcUipSrE0_n6LPpAz5VOh5D0"
 CHANNEL_ID = "@kabusxkira"
 MESSAGE_ID = 47
 
 def update_telegram():
-    # Turkiye Saati (UTC+3)
-    now = time.gmtime(time.time() + 3 * 3600)
-    time_str = time.strftime("%d.%m.%Y %H:%M:%S", now)
+    # Türkiye Saati ve Milisaniye (Telegram mecburen güncelleyecek)
+    now_ts = time.time() + (3 * 3600)
+    now = time.gmtime(now_ts)
+    ms = int((now_ts % 1) * 10)
+    time_str = f"{time.strftime('%d.%m.%Y %H:%M:%S', now)}.{ms}"
     
     text = f"""KABUS RENT
 
@@ -67,10 +68,8 @@ Hemen kiralamak için;
         print("Hata:", e)
 
 if __name__ == "__main__":
-    # Web sunucusu başlat
     Thread(target=run_web, daemon=True).start()
     
-    # Telegram limitine takılmamak için süreyi 120 saniye (2 dakika) yaptık
     while True:
         update_telegram()
-        time.sleep(120)
+        time.sleep(60)
