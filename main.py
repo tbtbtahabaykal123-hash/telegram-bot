@@ -1,13 +1,10 @@
 import os
-import asyncio
-from datetime import datetime
-import pytz
+import time
+import requests
 from flask import Flask
 from threading import Thread
-from telegram import Bot
-from telegram.error import TelegramError
 
-# Flask Web Server
+# Flask Web Server (Render kapanmasın diye)
 app = Flask(__name__)
 
 @app.route('/')
@@ -18,20 +15,15 @@ def run_flask():
     port = int(os.environ.get('PORT', 8080))
     app.run(host='0.0.0.0', port=port)
 
-# YENİ TELEGRAM BOT AYARLARI
+# TELEGRAM AYARLARI
 BOT_TOKEN = "8897902804:AAEdFWs9V41gcUipSrE0_n6LPpAz5VOh5D0"
 CHANNEL_ID = "@btkabus"
-MESSAGE_ID = 1234  # Kanaldaki güncellenecek mesajın ID'si
-
-bot = Bot(token=BOT_TOKEN)
-
-def get_turkey_time():
-    tz = pytz.timezone('Europe/Istanbul')
-    return datetime.now(tz)
+MESSAGE_ID = 1234
 
 def generate_status_text():
-    now = get_turkey_time()
-    time_str = now.strftime("%d.%m.%Y %H:%M:%S")
+    # Türkiye saatini manuel hesaplama (Kütüphane hatası olmasın diye)
+    now = time.gmtime(time.time() + 3 * 3600)
+    time_str = time.strftime("%d.%m.%Y %H:%M:%S", now)
     
     return f"""KABUS RENT
 
@@ -60,28 +52,27 @@ Hesap no'ların üzerine tıklayarak hesaplara hızlı bir şekilde ulaşabilirs
 Hemen kiralamak için;
 ✅ @btkabus"""
 
-async def update_loop():
-    while True:
-        try:
-            new_text = generate_status_text()
-            await bot.edit_message_text(
-                chat_id=CHANNEL_ID,
-                message_id=MESSAGE_ID,
-                text=new_text,
-                parse_mode='Markdown',
-                disable_web_page_preview=True
-            )
-        except TelegramError as e:
-            print(f"Güncelleme hatası: {e}")
-        except Exception as e:
-            print(f"Beklenmeyen hata: {e}")
-            
-        await asyncio.sleep(60)
+def update_message():
+    url = f"https://api.telegram.org/bot{BOT_TOKEN}/editMessageText"
+    payload = {
+        "chat_id": CHANNEL_ID,
+        "message_id": MESSAGE_ID,
+        "text": generate_status_text(),
+        "parse_mode": "Markdown",
+        "disable_web_page_preview": True
+    }
+    try:
+        requests.post(url, json=payload, timeout=10)
+    except Exception as e:
+        print(f"Hata: {e}")
 
 if __name__ == "__main__":
-    t = Thread(target=run_flask, daemon=True)
+    # Flask başlat
+    t = Thread(target=run_flask)
+    t.daemon = True
     t.start()
     
-    loop = asyncio.new_event_loop()
-    asyncio.set_event_loop(loop)
-    loop.run_until_complete(update_loop())
+    # Mesaj güncelleme döngüsü
+    while True:
+        update_message()
+        time.sleep(60)
