@@ -8,7 +8,7 @@ from telegram import Bot
 from telegram.error import TelegramError
 
 # Flask Web Server
-app = Flask('')
+app = Flask(__name__)
 
 @app.route('/')
 def home():
@@ -18,10 +18,10 @@ def run_flask():
     port = int(os.environ.get('PORT', 8080))
     app.run(host='0.0.0.0', port=port)
 
-# Telegram Ayarları (Bot token ve Kanal bilgilerini kendi bilgilerinle doğrula)
-BOT_TOKEN = "7724395805:AAEUh-4o3M-Y87w-5O-E01c1q2V3y4Z5"
-CHANNEL_ID = "@btkabus"  # veya kanal ID'n
-MESSAGE_ID = 1234       # güncellenecek mesaj ID'si
+# YENİ TELEGRAM BOT AYARLARI
+BOT_TOKEN = "8897902804:AAEdFWs9V41gcUipSrE0_n6LPpAz5VOh5D0"
+CHANNEL_ID = "@btkabus"
+MESSAGE_ID = 1234  # Kanaldaki güncellenecek mesajın ID'si
 
 bot = Bot(token=BOT_TOKEN)
 
@@ -33,17 +33,17 @@ def generate_status_text():
     now = get_turkey_time()
     time_str = now.strftime("%d.%m.%Y %H:%M:%S")
     
-    text = f"""KABUS RENT
+    return f"""KABUS RENT
 
 ┌──────────────────────┐
-🟢 Müsait Hesaplar
+  🟢 Müsait Hesaplar
 └──────────────────────┘
 
 [Hesap 1](https://t.me/kabusxkira/33)
 [Hesap 8](https://t.me/kabusxkira/40)
 
 ┌──────────────────────┐
-🔴 Meşgul Hesaplar
+  🔴 Meşgul Hesaplar
 └──────────────────────┘
 
 [Hesap 2](https://t.me/kabusxkira/34) - Ekstra Gece Paketi Devrede
@@ -59,7 +59,6 @@ Hesap no'ların üzerine tıklayarak hesaplara hızlı bir şekilde ulaşabilirs
 
 Hemen kiralamak için;
 ✅ @btkabus"""
-    return text
 
 async def update_loop():
     while True:
@@ -79,12 +78,10 @@ async def update_loop():
             
         await asyncio.sleep(60)
 
-def start_bot_loop():
+if __name__ == "__main__":
+    t = Thread(target=run_flask, daemon=True)
+    t.start()
+    
     loop = asyncio.new_event_loop()
     asyncio.set_event_loop(loop)
     loop.run_until_complete(update_loop())
-
-if __name__ == "__main__":
-    t = Thread(target=run_flask)
-    t.start()
-    start_bot_loop()
