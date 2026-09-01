@@ -16,7 +16,7 @@ def run_flask():
     app.run(host='0.0.0.0', port=port)
 
 # TELEGRAM BOT VE KANAL AYARLARI
-BOT_TOKEN = 8897902804:AAGRP_5WH87wngvCczarPM1w5AF7u-uaAUc
+BOT_TOKEN = "YENİ_TOKENİ_BURAYA_YAPIŞTIR" # BotFather'ın verdiği yeni token
 CHANNEL_ID = "@kabusxkira"
 MESSAGE_ID = 47
 
