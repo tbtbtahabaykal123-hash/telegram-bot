@@ -7,7 +7,7 @@ from threading import Thread
 from telegram import Bot
 from telegram.error import TelegramError
 
-# Flask Web Server
+# Flask Web Server (Platform kapanmaması için)
 app = Flask('')
 
 @app.route('/')
@@ -18,7 +18,7 @@ def run_flask():
     port = int(os.environ.get('PORT', 8080))
     app.run(host='0.0.0.0', port=port)
 
-# Telegram Ayarları
+# Telegram Ayarları (Kendi bilgilerinle doğrulamayı unutma reis)
 BOT_TOKEN = "7724395805:AAEUh-4o3M-Y87w-5O-E01c1q2V3y4Z5"
 CHANNEL_ID = "@btkabus"
 MESSAGE_ID = 1234
@@ -45,6 +45,7 @@ def generate_status_text():
 🌙 **LİSTE 5:** EKSTRA GECE PAKETİ DEVREDE
 🌙 **LİSTE 6:** EKSTRA GECE PAKETİ DEVREDE
 🌙 **LİSTE 7:** EKSTRA GECE PAKETİ DEVREDE
+🟢 **LİSTE 8:** MÜSAİT ➡️ [Detay için Tıklayın](https://t.me/kabusxkira/40)
 ━━━━━━━━━━━━━━━━━━━━━━
 
 ℹ️ Hesap kiralamak ve detaylı bilgi almak için iletişime geçebilirsiniz."""
@@ -58,7 +59,8 @@ async def update_loop():
                 chat_id=CHANNEL_ID,
                 message_id=MESSAGE_ID,
                 text=new_text,
-                parse_mode='Markdown'
+                parse_mode='Markdown',
+                disable_web_page_preview=True
             )
         except TelegramError as e:
             print(f"Güncelleme hatası: {e}")
