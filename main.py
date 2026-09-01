@@ -44,29 +44,30 @@ def update_telegram_message():
     now = time.gmtime(now_ts)
     time_str = time.strftime('%d.%m.%Y %H:%M:%S', now)
 
-    # 🟢 Müsait Hesaplar (1 ve 7)
-    musait_hesaplar = [
-        "[Hesap 1](https://t.me/kabusxkira/3)",
-        "[Hesap 7](https://t.me/kabusxkira/34)"
-    ]
+    # 🟢 Müsait Liste
+    musait_hesaplar = []
     
     # 🔴 Meşgul Listesi
     mesgul_hesaplar = []
 
-    # 1. Hesap 2 Kontrolü (Geri Sayım)
+    # 1. Gece Paketi Hesapları (1, 3, 4, 5, 6, 7)
+    gece_hesaplari = [
+        "[Hesap 1](https://t.me/kabusxkira/3) - Gece Paketi Devrede",
+        "[Hesap 3](https://t.me/kabusxkira/12) - Gece Paketi Devrede",
+        "[Hesap 4](https://t.me/kabusxkira/14) - Gece Paketi Devrede",
+        "[Hesap 5](https://t.me/kabusxkira/19) - Gece Paketi Devrede",
+        "[Hesap 6](https://t.me/kabusxkira/22) - Gece Paketi Devrede",
+        "[Hesap 7](https://t.me/kabusxkira/34) - Gece Paketi Devrede"
+    ]
+
+    # 2. Hesap 2 Kontrolü (Geri Sayım)
     hesap2_remaining = get_hesap2_countdown()
     if hesap2_remaining:
         mesgul_hesaplar.append(f"[Hesap 2](https://t.me/kabusxkira/10) - {hesap2_remaining}")
     else:
         musait_hesaplar.append("[Hesap 2](https://t.me/kabusxkira/10)")
 
-    # 2. Gece Paketi Hesapları (3, 4, 5, 6)
-    gece_hesaplari = [
-        "[Hesap 3](https://t.me/kabusxkira/12) - Gece Paketi Devrede",
-        "[Hesap 4](https://t.me/kabusxkira/14) - Gece Paketi Devrede",
-        "[Hesap 5](https://t.me/kabusxkira/19) - Gece Paketi Devrede",
-        "[Hesap 6](https://t.me/kabusxkira/22) - Gece Paketi Devrede"
-    ]
+    # Meşgul listesini sırayla ekleyelim
     mesgul_hesaplar.extend(gece_hesaplari)
 
     # 3. Ekstra Gece Paketi Hesapları (8)
