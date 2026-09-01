@@ -12,11 +12,10 @@ CHANNEL_ID = "@kabusxkira"
 MESSAGE_ID = 47
 
 def update_telegram_message():
-    # Türkiye Saati (UTC+3) ve Milisaniye
+    # Türkiye Saati (UTC+3) - Temiz Format
     now_ts = time.time() + (3 * 3600)
     now = time.gmtime(now_ts)
-    ms = int((now_ts % 1) * 10)
-    time_str = f"{time.strftime('%d.%m.%Y %H:%M:%S', now)}.{ms}"
+    time_str = time.strftime('%d.%m.%Y %H:%M:%S', now)
     
     text = f"""KABUS RENT
 
