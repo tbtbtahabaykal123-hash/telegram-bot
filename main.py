@@ -11,7 +11,6 @@ CHANNEL_ID = "@kabusxkira"
 MESSAGE_ID = 47
 
 # Hesap 2 Bitiş Zamanı: TSİ 02.09.2026 Saat 22:40:00 (UTC 19:40:00)
-# Bu timestamp tam doğru TSİ hedeftir.
 HESAP2_TARGET_TS = 1788378000
 
 def get_hesap2_countdown():
@@ -46,15 +45,13 @@ def update_telegram_message():
     now = time.gmtime(now_ts)
     time_str = time.strftime('%d.%m.%Y %H:%M:%S', now)
 
+    # 🟢 Sadece Hesap 1 ve Hesap 7 Müsait
     musait_hesaplar = [
         "[Hesap 1](https://t.me/kabusxkira/3)",
-        "[Hesap 4](https://t.me/kabusxkira/14)",
-        "[Hesap 5](https://t.me/kabusxkira/19)",
-        "[Hesap 6](https://t.me/kabusxkira/22)",
-        "[Hesap 7](https://t.me/kabusxkira/34)",
-        "[Hesap 8](https://t.me/kabusxkira/40)"
+        "[Hesap 7](https://t.me/kabusxkira/34)"
     ]
     
+    # 🔴 Meşgul Listesi
     mesgul_hesaplar = []
 
     # 1. Hesap 2 Kontrolü (Geri Sayım)
@@ -64,8 +61,17 @@ def update_telegram_message():
     else:
         musait_hesaplar.append("[Hesap 2](https://t.me/kabusxkira/10)")
 
-    # 2. Hesap 3 (Gece Paketi Devrede - Sabit Meşgul)
+    # 2. Hesap 3 (Gece Paketi Devrede)
     mesgul_hesaplar.append("[Hesap 3](https://t.me/kabusxkira/12) - Gece Paketi Devrede")
+
+    # 3. Diğer Meşgul Hesaplar (4, 5, 6, 8)
+    diger_mesguller = [
+        "[Hesap 4](https://t.me/kabusxkira/14)",
+        "[Hesap 5](https://t.me/kabusxkira/19)",
+        "[Hesap 6](https://t.me/kabusxkira/22)",
+        "[Hesap 8](https://t.me/kabusxkira/40)"
+    ]
+    mesgul_hesaplar.extend(diger_mesguller)
 
     # Formatlama
     musait_text = "\n".join(musait_hesaplar) if musait_hesaplar else "Yok"
