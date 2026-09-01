@@ -4,27 +4,27 @@ import requests
 from flask import Flask
 from threading import Thread
 
-# Flask Web Server
 app = Flask(__name__)
 
 @app.route('/')
 def home():
-    return "Bot Aktif!"
+    return "Bot Calisiyor"
 
-def run_flask():
+def run_web():
     port = int(os.environ.get('PORT', 8080))
     app.run(host='0.0.0.0', port=port)
 
-# TELEGRAM BOT VE KANAL AYARLARI
-BOT_TOKEN = "YENİ_TOKENİ_BURAYA_YAPIŞTIR" # BotFather'ın verdiği yeni token
+# AYARLAR
+BOT_TOKEN = "8897902804:AAEdFWs9V41gcUipSrE0_n6LPpAz5VOh5D0"
 CHANNEL_ID = "@kabusxkira"
 MESSAGE_ID = 47
 
-def generate_status_text():
+def update_telegram():
+    # Turkiye Saati (UTC+3)
     now = time.gmtime(time.time() + 3 * 3600)
     time_str = time.strftime("%d.%m.%Y %H:%M:%S", now)
     
-    return f"""KABUS RENT
+    text = f"""KABUS RENT
 
 ┌──────────────────────┐
   🟢 Müsait Hesaplar
@@ -51,26 +51,26 @@ Hesap no'ların üzerine tıklayarak hesaplara hızlı bir şekilde ulaşabilirs
 Hemen kiralamak için;
 ✅ @btkabus"""
 
-def update_message():
     url = f"https://api.telegram.org/bot{BOT_TOKEN}/editMessageText"
     payload = {
         "chat_id": CHANNEL_ID,
         "message_id": MESSAGE_ID,
-        "text": generate_status_text(),
+        "text": text,
         "parse_mode": "Markdown",
         "disable_web_page_preview": True
     }
+    
     try:
         res = requests.post(url, json=payload, timeout=10)
-        print("Güncelleme yanıtı:", res.json())
+        print("Telegram Yaniti:", res.json())
     except Exception as e:
-        print(f"Hata: {e}")
+        print("Hata:", e)
 
 if __name__ == "__main__":
-    t = Thread(target=run_flask)
-    t.daemon = True
-    t.start()
+    # Web sunucusu başlat
+    Thread(target=run_web, daemon=True).start()
     
+    # Telegram limitine takılmamak için süreyi 120 saniye (2 dakika) yaptık
     while True:
-        update_message()
-        time.sleep(60)
+        update_telegram()
+        time.sleep(120)
