@@ -1,19 +1,29 @@
+import os
 import time
 import requests
+import threading
+from flask import Flask
 
-# TELEGRAM BOT VE KANAL AYARLARI
+app = Flask(__name__)
+
+@app.route('/')
+def home():
+    return "OK"
+
 BOT_TOKEN = "8897902804:AAEdFWs9V41gcUipSrE0_n6LPpAz5VOh5D0"
 CHANNEL_ID = "@kabusxkira"
 MESSAGE_ID = 47
 
-def update_telegram():
-    # Türkiye Saati ve Milisaniye
-    now_ts = time.time() + (3 * 3600)
-    now = time.gmtime(now_ts)
-    ms = int((now_ts % 1) * 10)
-    time_str = f"{time.strftime('%d.%m.%Y %H:%M:%S', now)}.{ms}"
-    
-    text = f"""KABUS RENT
+def update_loop():
+    time.sleep(3)
+    while True:
+        try:
+            now_ts = time.time() + (3 * 3600)
+            now = time.gmtime(now_ts)
+            ms = int((now_ts % 1) * 10)
+            time_str = f"{time.strftime('%d.%m.%Y %H:%M:%S', now)}.{ms}"
+            
+            text = f"""KABUS RENT
 
 ┌──────────────────────┐
   🟢 Müsait Hesaplar
@@ -40,22 +50,24 @@ Hesap no'ların üzerine tıklayarak hesaplara hızlı bir şekilde ulaşabilirs
 Hemen kiralamak için;
 ✅ @btkabus"""
 
-    url = f"https://api.telegram.org/bot{BOT_TOKEN}/editMessageText"
-    payload = {
-        "chat_id": CHANNEL_ID,
-        "message_id": MESSAGE_ID,
-        "text": text,
-        "parse_mode": "Markdown",
-        "disable_web_page_preview": True
-    }
-    
-    try:
-        res = requests.post(url, json=payload, timeout=10)
-        print("Telegram Yaniti:", res.json())
-    except Exception as e:
-        print("Hata:", e)
+            url = f"https://api.telegram.org/bot{BOT_TOKEN}/editMessageText"
+            payload = {
+                "chat_id": CHANNEL_ID,
+                "message_id": MESSAGE_ID,
+                "text": text,
+                "parse_mode": "Markdown",
+                "disable_web_page_preview": True
+            }
+            res = requests.post(url, json=payload, timeout=10)
+            print("TELEGRAM CEVAP:", res.json())
+        except Exception as e:
+            print("HATA:", e)
+            
+        time.sleep(60)
 
-# Doğrudan sonsuz döngü
-while True:
-    update_telegram()
-    time.sleep(60)
+# KOD DOSYASI YÜKLENDİĞİ AN DÖNGÜYÜ BAŞLAT (Web sunucusundan bağımsız)
+threading.Thread(target=update_loop, daemon=True).start()
+
+if __name__ == "__main__":
+    port = int(os.environ.get('PORT', 8080))
+    app.run(host='0.0.0.0', port=port)
