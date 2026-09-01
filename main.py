@@ -2,29 +2,21 @@ import os
 import time
 import requests
 from flask import Flask
-from threading import Thread
 
 app = Flask(__name__)
 
-# TELEGRAM AYARLARI
 BOT_TOKEN = "8897902804:AAEdFWs9V41gcUipSrE0_n6LPpAz5VOh5D0"
 CHANNEL_ID = "@kabusxkira"
 MESSAGE_ID = 47
 
-@app.route('/')
-def home():
-    return "Bot Aktif"
-
-def telegram_loop():
-    print("--- DÖNGÜ VE TELEGRAM İSTEĞİ BAŞLADI ---")
-    while True:
-        try:
-            now_ts = time.time() + (3 * 3600)
-            now = time.gmtime(now_ts)
-            ms = int((now_ts % 1) * 10)
-            time_str = f"{time.strftime('%d.%m.%Y %H:%M:%S', now)}.{ms}"
-            
-            text = f"""KABUS RENT
+def update_telegram_message():
+    # Türkiye Saati ve Milisaniye
+    now_ts = time.time() + (3 * 3600)
+    now = time.gmtime(now_ts)
+    ms = int((now_ts % 1) * 10)
+    time_str = f"{time.strftime('%d.%m.%Y %H:%M:%S', now)}.{ms}"
+    
+    text = f"""KABUS RENT
 
 ┌──────────────────────┐
   🟢 Müsait Hesaplar
@@ -51,23 +43,27 @@ Hesap no'ların üzerine tıklayarak hesaplara hızlı bir şekilde ulaşabilirs
 Hemen kiralamak için;
 ✅ @btkabus"""
 
-            url = f"https://api.telegram.org/bot{BOT_TOKEN}/editMessageText"
-            payload = {
-                "chat_id": CHANNEL_ID,
-                "message_id": MESSAGE_ID,
-                "text": text,
-                "parse_mode": "Markdown",
-                "disable_web_page_preview": True
-            }
-            res = requests.post(url, json=payload, timeout=10)
-            print("TELEGRAM SONUCU:", res.json())
-        except Exception as e:
-            print("TELEGRAM HATA:", e)
-            
-        time.sleep(60)
+    url = f"https://api.telegram.org/bot{BOT_TOKEN}/editMessageText"
+    payload = {
+        "chat_id": CHANNEL_ID,
+        "message_id": MESSAGE_ID,
+        "text": text,
+        "parse_mode": "Markdown",
+        "disable_web_page_preview": True
+    }
+    
+    try:
+        res = requests.post(url, json=payload, timeout=10)
+        return res.json()
+    except Exception as e:
+        return {"error": str(e)}
 
-# Arka plan iş parçacığını doğrudan başlat
-Thread(target=telegram_loop, daemon=True).start()
+@app.route('/')
+def home():
+    # Sayfaya veya Cron-job'a her istek geldiğinde Telegram'ı zorla güncelle
+    status = update_telegram_message()
+    print("TELEGRAM SONUCU:", status)
+    return f"Guncelleme Tetiklendi: {status}"
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 10000))
