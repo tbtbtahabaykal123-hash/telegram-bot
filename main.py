@@ -1,118 +1,78 @@
-import asyncio
-import datetime
 import os
-from datetime import timezone, timedelta
-from threading import Thread
+import asyncio
+from datetime import datetime
+import pytz
 from flask import Flask
+from threading import Thread
 from telegram import Bot
-from telegram.constants import ParseMode
+from telegram.error import TelegramError
 
+# Flask Web Server
 app = Flask('')
 
 @app.route('/')
 def home():
-    return "Bot Calisiyor!"
+    return "Bot Aktif!"
 
-def run():
+def run_flask():
     port = int(os.environ.get('PORT', 8080))
     app.run(host='0.0.0.0', port=port)
 
-def keep_alive():
-    t = Thread(target=run)
-    t.daemon = True
-    t.start()
+# Telegram Ayarları
+BOT_TOKEN = "7724395805:AAEUh-4o3M-Y87w-5O-E01c1q2V3y4Z5"
+CHANNEL_ID = "@btkabus"
+MESSAGE_ID = 1234
 
-TOKEN = '8978792663:AAFEmc5qriY8a4tuX05yxzARfEr5KgwIMM0'
-CHAT_ID = -1004315557168
+bot = Bot(token=BOT_TOKEN)
 
-async def main():
-    bot = Bot(token=TOKEN)
-    message_id = None
-    tr_tz = timezone(timedelta(hours=3))
+def get_turkey_time():
+    tz = pytz.timezone('Europe/Istanbul')
+    return datetime.now(tz)
 
+def generate_status_text():
+    now = get_turkey_time()
+    time_str = now.strftime("%H:%M:%S")
+    date_str = now.strftime("%d.%m.%Y")
+    
+    text = f"""🔥 **BT KABUS HESAP KİRALAMA SERVİSİ** 🔥
+📅 **Tarih:** {date_str} | ⏰ **Saat:** {time_str}
+
+━━━━━━━━━━━━━━━━━━━━━━
+🟢 **LİSTE 1:** MÜSAİT
+🌙 **LİSTE 2:** EKSTRA GECE PAKETİ DEVREDE
+🌙 **LİSTE 3:** EKSTRA GECE PAKETİ DEVREDE
+🌙 **LİSTE 4:** EKSTRA GECE PAKETİ DEVREDE
+🌙 **LİSTE 5:** EKSTRA GECE PAKETİ DEVREDE
+🌙 **LİSTE 6:** EKSTRA GECE PAKETİ DEVREDE
+🌙 **LİSTE 7:** EKSTRA GECE PAKETİ DEVREDE
+━━━━━━━━━━━━━━━━━━━━━━
+
+ℹ️ Hesap kiralamak ve detaylı bilgi almak için iletişime geçebilirsiniz."""
+    return text
+
+async def update_loop():
     while True:
         try:
-            simdi = datetime.datetime.now(tr_tz)
-            
-            bugun_11 = simdi.replace(hour=11, minute=0, second=0, microsecond=0)
-            bugun_13 = simdi.replace(hour=13, minute=0, second=0, microsecond=0)
-
-            hesaplar = [
-                {"isim": "Hesap 1", "link": "https://t.me/kabusxkira/3", "durum": "musait"},
-                {"isim": "Hesap 2", "link": "https://t.me/kabusxkira/10", "durum": "ekstra_gece", "bitis": bugun_13},
-                {"isim": "Hesap 3", "link": "https://t.me/kabusxkira/12", "durum": "gece", "bitis": bugun_11},
-                {"isim": "Hesap 4", "link": "https://t.me/kabusxkira/14", "durum": "ekstra_gece", "bitis": bugun_13},
-                {"isim": "Hesap 5", "link": "https://t.me/kabusxkira/19", "durum": "gece", "bitis": bugun_11},
-                {"isim": "Hesap 6", "link": "https://t.me/kabusxkira/22", "durum": "ekstra_gece", "bitis": bugun_13}
-            ]
-
-            musait_listesi = []
-            mesgul_listesi = []
-
-            for h in hesaplar:
-                satir_link = f'<a href="{h["link"]}">{h["isim"]}</a>'
-                
-                if h["durum"] == "musait":
-                    musait_listesi.append(f"  {satir_link}")
-                
-                elif h["durum"] in ["gece", "ekstra_gece"]:
-                    if simdi >= h["bitis"]:
-                        musait_listesi.append(f"  {satir_link}")
-                    else:
-                        metin = "Gece Paketi Devrede" if h["durum"] == "gece" else "Ekstra Gece Paketi Devrede"
-                        mesgul_listesi.append(f"  {satir_link} - {metin}")
-
-            musait_metin = "\n".join(musait_listesi) if musait_listesi else "  Şu an müsait hesap yok."
-            mesgul_metin = "\n".join(mesgul_listesi) if mesgul_listesi else "  Şu an meşgul hesap yok."
-
-            metin = (
-                "<b>KABUS RENT</b>\n\n"
-                "┌───────────────────┐\n"
-                "  🟢 <b>Müsait Hesaplar</b>\n"
-                "└───────────────────┘\n\n"
-                f"{musait_metin}\n\n"
-                "┌───────────────────┐\n"
-                "  🔴 <b>Meşgul Hesaplar</b>\n"
-                "└───────────────────┘\n\n"
-                f"{mesgul_metin}\n\n"
-                f"⏱ <i>Son Güncelleme: {simdi.strftime('%d.%m.%Y %H:%M:%S')}</i>\n\n"
-                "Hesap no'ların üzerine tıklayarak hesaplara hızlı bir şekilde ulaşabilirsiniz.\n\n"
-                "Hemen kiralamak için;\n"
-                "✅ @btkabus"
+            new_text = generate_status_text()
+            await bot.edit_message_text(
+                chat_id=CHANNEL_ID,
+                message_id=MESSAGE_ID,
+                text=new_text,
+                parse_mode='Markdown'
             )
-
-            if message_id is None:
-                msg = await bot.send_message(
-                    chat_id=CHAT_ID,
-                    text=metin,
-                    parse_mode=ParseMode.HTML,
-                    disable_web_page_preview=True
-                )
-                message_id = msg.message_id
-            else:
-                try:
-                    await bot.edit_message_text(
-                        chat_id=CHAT_ID,
-                        message_id=message_id,
-                        text=metin,
-                        parse_mode=ParseMode.HTML,
-                        disable_web_page_preview=True
-                    )
-                except Exception as edit_err:
-                    print(f"Edit hatasi, yeni mesaj atiliyor: {edit_err}")
-                    msg = await bot.send_message(
-                        chat_id=CHAT_ID,
-                        text=metin,
-                        parse_mode=ParseMode.HTML,
-                        disable_web_page_preview=True
-                    )
-                    message_id = msg.message_id
-
+        except TelegramError as e:
+            print(f"Güncelleme hatası: {e}")
         except Exception as e:
-            print(f"HATA: {e}")
+            print(f"Beklenmeyen hata: {e}")
+            
+        await asyncio.sleep(60)
 
-        await asyncio.sleep(5)
+def start_bot_loop():
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
+    loop.run_until_complete(update_loop())
 
-if __name__ == '__main__':
-    keep_alive()
-    asyncio.run(main())
+if __name__ == "__main__":
+    t = Thread(target=run_flask)
+    t.start()
+    start_bot_loop()
