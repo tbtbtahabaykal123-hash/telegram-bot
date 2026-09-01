@@ -18,7 +18,7 @@ def run_flask():
     port = int(os.environ.get('PORT', 8080))
     app.run(host='0.0.0.0', port=port)
 
-# Telegram Ayarları (Kendi Token/ID bilgilerinin doğru olduğundan emin ol reis)
+# Telegram Ayarları (Bot token ve Kanal bilgilerini kendi bilgilerinle doğrula)
 BOT_TOKEN = "7724395805:AAEUh-4o3M-Y87w-5O-E01c1q2V3y4Z5"
 CHANNEL_ID = "@btkabus"  # veya kanal ID'n
 MESSAGE_ID = 1234       # güncellenecek mesaj ID'si
@@ -33,17 +33,17 @@ def generate_status_text():
     now = get_turkey_time()
     time_str = now.strftime("%d.%m.%Y %H:%M:%S")
     
-    text = f"""**KABUS RENT**
+    text = f"""KABUS RENT
 
 ┌──────────────────────┐
-  🟢 **Müsait Hesaplar**
+🟢 Müsait Hesaplar
 └──────────────────────┘
 
 [Hesap 1](https://t.me/kabusxkira/33)
 [Hesap 8](https://t.me/kabusxkira/40)
 
 ┌──────────────────────┐
-  🔴 **Meşgul Hesaplar**
+🔴 Meşgul Hesaplar
 └──────────────────────┘
 
 [Hesap 2](https://t.me/kabusxkira/34) - Ekstra Gece Paketi Devrede
@@ -53,7 +53,7 @@ def generate_status_text():
 [Hesap 6](https://t.me/kabusxkira/38) - Ekstra Gece Paketi Devrede
 [Hesap 7](https://t.me/kabusxkira/39) - Ekstra Gece Paketi Devrede
 
-⏱️ _Son Güncelleme: {time_str}_
+⏱️ Son Güncelleme: {time_str}
 
 Hesap no'ların üzerine tıklayarak hesaplara hızlı bir şekilde ulaşabilirsiniz.
 
