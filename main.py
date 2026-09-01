@@ -2,15 +2,17 @@ import os
 import time
 import requests
 from flask import Flask
+from threading import Thread
 
 app = Flask(__name__)
 
-BOT_TOKEN = "8897902804:AAEdFWs9V41gcUipSrE0_n6LPpAz5VOh5D0"
+# TELEGRAM BOT VE KANAL AYARLARI
+BOT_TOKEN = "8897902804:AAGRP_5WH87wngvCczarPM1w5AF7u-uaAUc"
 CHANNEL_ID = "@kabusxkira"
 MESSAGE_ID = 47
 
 def update_telegram_message():
-    # Türkiye Saati ve Milisaniye
+    # Türkiye Saati (UTC+3) ve Milisaniye
     now_ts = time.time() + (3 * 3600)
     now = time.gmtime(now_ts)
     ms = int((now_ts % 1) * 10)
@@ -58,11 +60,19 @@ Hemen kiralamak için;
     except Exception as e:
         return {"error": str(e)}
 
+def auto_loop():
+    time.sleep(5)
+    while True:
+        status = update_telegram_message()
+        print("OTOMATIK DÖNGÜ SONUCU:", status)
+        time.sleep(60)
+
+# Arka plan döngüsünü başlat
+Thread(target=auto_loop, daemon=True).start()
+
 @app.route('/')
 def home():
-    # Sayfaya veya Cron-job'a her istek geldiğinde Telegram'ı zorla güncelle
     status = update_telegram_message()
-    print("TELEGRAM SONUCU:", status)
     return f"Guncelleme Tetiklendi: {status}"
 
 if __name__ == "__main__":
