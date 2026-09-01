@@ -10,13 +10,14 @@ BOT_TOKEN = "8897902804:AAGRP_5WH87wngvCczarPM1w5AF7u-uaAUc"
 CHANNEL_ID = "@kabusxkira"
 MESSAGE_ID = 47
 
-# Hesap 2 Bitiş Zamanı: 02.09.2026 22:36:22 TSİ
-HESAP2_TARGET_TS = 1788377782
+# Hesap 2 Bitiş Zamanı: TSİ 02.09.2026 Saat 22:40:00 (UTC 19:40:00)
+# Bu timestamp tam doğru TSİ hedeftir.
+HESAP2_TARGET_TS = 1788378000
 
 def get_hesap2_countdown():
-    # TSİ (UTC+3) Zamanı
-    now_ts = time.time() + (3 * 3600)
-    diff = int(HESAP2_TARGET_TS - now_ts)
+    # Gerçek UTC Zamanı
+    now_utc = time.time()
+    diff = int(HESAP2_TARGET_TS - now_utc)
     
     if diff <= 0:
         return None
@@ -40,15 +41,10 @@ def get_hesap2_countdown():
     return " ".join(parts) + " Var"
 
 def update_telegram_message():
-    # Türkiye Saati (UTC+3)
+    # Türkiye Saati Gösterimi (UTC+3)
     now_ts = time.time() + (3 * 3600)
     now = time.gmtime(now_ts)
-    
-    current_hour = now.tm_hour
     time_str = time.strftime('%d.%m.%Y %H:%M:%S', now)
-    
-    # Gece Paketi Mantığı (Saat 10:00 öncesi meşgul)
-    gece_status = "musait" if current_hour >= 10 else "mesgul"
 
     musait_hesaplar = [
         "[Hesap 1](https://t.me/kabusxkira/3)",
@@ -68,11 +64,8 @@ def update_telegram_message():
     else:
         musait_hesaplar.append("[Hesap 2](https://t.me/kabusxkira/10)")
 
-    # 2. Hesap 3 Kontrolü (Gece Paketi)
-    if gece_status == "musait":
-        musait_hesaplar.append("[Hesap 3](https://t.me/kabusxkira/12)")
-    else:
-        mesgul_hesaplar.append("[Hesap 3](https://t.me/kabusxkira/12) - Gece Paketi Devrede")
+    # 2. Hesap 3 (Gece Paketi Devrede - Sabit Meşgul)
+    mesgul_hesaplar.append("[Hesap 3](https://t.me/kabusxkira/12) - Gece Paketi Devrede")
 
     # Formatlama
     musait_text = "\n".join(musait_hesaplar) if musait_hesaplar else "Yok"
