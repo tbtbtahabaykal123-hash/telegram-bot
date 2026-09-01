@@ -15,10 +15,10 @@ def run_flask():
     port = int(os.environ.get('PORT', 8080))
     app.run(host='0.0.0.0', port=port)
 
-# TELEGRAM BOT VE KANAL AYARLARI
+# TELEGRAM BOT VE KANAL AYARLARI (HEPSİ DÜZELTİLDİ)
 BOT_TOKEN = "8897902804:AAEdFWs9V41gcUipSrE0_n6LPpAz5VOh5D0"
-CHANNEL_ID = "@btkabus"
-MESSAGE_ID = 47  # https://t.me/kabusxkira/47 mesajı için ayarlandı
+CHANNEL_ID = "@kabusxkira"  # Kanal adın güncellendi
+MESSAGE_ID = 47            # 47 ID'li mesaj ayarlandı
 
 def generate_status_text():
     now = time.gmtime(time.time() + 3 * 3600)
