@@ -4,7 +4,7 @@ import requests
 from flask import Flask
 from threading import Thread
 
-# Flask Web Server (Render kapanmasın diye)
+# Flask Web Server
 app = Flask(__name__)
 
 @app.route('/')
@@ -15,13 +15,12 @@ def run_flask():
     port = int(os.environ.get('PORT', 8080))
     app.run(host='0.0.0.0', port=port)
 
-# TELEGRAM AYARLARI
+# TELEGRAM BOT VE KANAL AYARLARI
 BOT_TOKEN = "8897902804:AAEdFWs9V41gcUipSrE0_n6LPpAz5VOh5D0"
 CHANNEL_ID = "@btkabus"
-MESSAGE_ID = 1234
+MESSAGE_ID = 47  # https://t.me/kabusxkira/47 mesajı için ayarlandı
 
 def generate_status_text():
-    # Türkiye saatini manuel hesaplama (Kütüphane hatası olmasın diye)
     now = time.gmtime(time.time() + 3 * 3600)
     time_str = time.strftime("%d.%m.%Y %H:%M:%S", now)
     
@@ -62,17 +61,16 @@ def update_message():
         "disable_web_page_preview": True
     }
     try:
-        requests.post(url, json=payload, timeout=10)
+        res = requests.post(url, json=payload, timeout=10)
+        print("Güncelleme sonucu:", res.json())
     except Exception as e:
         print(f"Hata: {e}")
 
 if __name__ == "__main__":
-    # Flask başlat
     t = Thread(target=run_flask)
     t.daemon = True
     t.start()
     
-    # Mesaj güncelleme döngüsü
     while True:
         update_message()
         time.sleep(60)
