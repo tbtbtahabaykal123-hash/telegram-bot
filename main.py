@@ -10,68 +10,27 @@ BOT_TOKEN = "8897902804:AAGRP_5WH87wngvCczarPM1w5AF7u-uaAUc"
 CHANNEL_ID = "@kabusxkira"
 MESSAGE_ID = 47
 
-# Hesap 2 Bitiş Zamanı: TSİ 02.09.2026 Saat 22:40:00 (UTC 19:40:00)
-HESAP2_TARGET_TS = 1788378000
-
-def get_hesap2_countdown():
-    now_utc = time.time()
-    diff = int(HESAP2_TARGET_TS - now_utc)
-    
-    if diff <= 0:
-        return None
-    
-    days = diff // 86400
-    rem = diff % 86400
-    hours = rem // 3600
-    rem %= 3600
-    minutes = rem // 60
-    seconds = rem % 60
-    
-    parts = []
-    if days > 0:
-        parts.append(f"{days} G")
-    if hours > 0 or days > 0:
-        parts.append(f"{hours} Saat")
-    if minutes > 0 or hours > 0 or days > 0:
-        parts.append(f"{minutes} Dk")
-    parts.append(f"{seconds} Sn")
-    
-    return " ".join(parts) + " Var"
-
 def update_telegram_message():
-    # Türkiye Saati Gösterimi (UTC+3)
+    # Türkiye Saati (UTC+3)
     now_ts = time.time() + (3 * 3600)
     now = time.gmtime(now_ts)
     time_str = time.strftime('%d.%m.%Y %H:%M:%S', now)
 
-    # 🟢 Müsait Liste
-    musait_hesaplar = []
-    
-    # 🔴 Meşgul Listesi
-    mesgul_hesaplar = []
-
-    # 1. Gece Paketi Hesapları (1, 3, 4, 5, 6, 7)
-    gece_hesaplari = [
-        "[Hesap 1](https://t.me/kabusxkira/3) - Gece Paketi Devrede",
-        "[Hesap 3](https://t.me/kabusxkira/12) - Gece Paketi Devrede",
-        "[Hesap 4](https://t.me/kabusxkira/14) - Gece Paketi Devrede",
-        "[Hesap 5](https://t.me/kabusxkira/19) - Gece Paketi Devrede",
-        "[Hesap 6](https://t.me/kabusxkira/22) - Gece Paketi Devrede",
-        "[Hesap 7](https://t.me/kabusxkira/34) - Gece Paketi Devrede"
+    # 🟢 Müsait Hesaplar (1, 4, 5, 7, 8)
+    musait_hesaplar = [
+        "[Hesap 1](https://t.me/kabusxkira/3)",
+        "[Hesap 4](https://t.me/kabusxkira/14)",
+        "[Hesap 5](https://t.me/kabusxkira/19)",
+        "[Hesap 7](https://t.me/kabusxkira/34)",
+        "[Hesap 8](https://t.me/kabusxkira/40)"
     ]
-
-    # 2. Hesap 2 Kontrolü (Geri Sayım)
-    hesap2_remaining = get_hesap2_countdown()
-    if hesap2_remaining:
-        mesgul_hesaplar.append(f"[Hesap 2](https://t.me/kabusxkira/10) - {hesap2_remaining}")
-    else:
-        musait_hesaplar.append("[Hesap 2](https://t.me/kabusxkira/10)")
-
-    # Meşgul listesini sırayla ekleyelim
-    mesgul_hesaplar.extend(gece_hesaplari)
-
-    # 3. Ekstra Gece Paketi Hesapları (8)
-    mesgul_hesaplar.append("[Hesap 8](https://t.me/kabusxkira/40) - Ekstra Gece Paketi Devrede")
+    
+    # 🔴 Meşgul Hesaplar (2, 3, 6 - Gece Paketi Devrede)
+    mesgul_hesaplar = [
+        "[Hesap 2](https://t.me/kabusxkira/10) - Gece Paketi Devrede",
+        "[Hesap 3](https://t.me/kabusxkira/12) - Gece Paketi Devrede",
+        "[Hesap 6](https://t.me/kabusxkira/22) - Gece Paketi Devrede"
+    ]
 
     # Formatlama
     musait_text = "\n".join(musait_hesaplar) if musait_hesaplar else "Yok"
