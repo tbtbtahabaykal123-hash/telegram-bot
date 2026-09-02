@@ -14,23 +14,32 @@ def update_telegram_message():
     # Türkiye Saati (UTC+3)
     now_ts = time.time() + (3 * 3600)
     now = time.gmtime(now_ts)
-    time_str = time.strftime('%d.%m.%Y %H:%M:%S', now)
-
-    # 🟢 Müsait Hesaplar (1, 4, 5, 7, 8)
-    musait_hesaplar = [
-        "[Hesap 1](https://t.me/kabusxkira/3)",
-        "[Hesap 4](https://t.me/kabusxkira/14)",
-        "[Hesap 5](https://t.me/kabusxkira/19)",
-        "[Hesap 7](https://t.me/kabusxkira/34)",
-        "[Hesap 8](https://t.me/kabusxkira/40)"
-    ]
     
-    # 🔴 Meşgul Hesaplar (2, 3, 6 - Gece Paketi Devrede)
-    mesgul_hesaplar = [
-        "[Hesap 2](https://t.me/kabusxkira/10) - Gece Paketi Devrede",
-        "[Hesap 3](https://t.me/kabusxkira/12) - Gece Paketi Devrede",
-        "[Hesap 6](https://t.me/kabusxkira/22) - Gece Paketi Devrede"
+    current_hour = now.tm_hour
+    time_str = time.strftime('%d.%m.%Y %H:%M:%S', now)
+    
+    # Gece Paketi Mantığı: Saat 10:00 ve sonrası Müsait, 00:00-10:00 arası Meşgul
+    is_musait = current_hour >= 10
+
+    tum_hesaplar = [
+        ("[Hesap 1](https://t.me/kabusxkira/3)", "Gece Paketi Devrede"),
+        ("[Hesap 2](https://t.me/kabusxkira/10)", "Gece Paketi Devrede"),
+        ("[Hesap 3](https://t.me/kabusxkira/12)", "Gece Paketi Devrede"),
+        ("[Hesap 4](https://t.me/kabusxkira/14)", "Gece Paketi Devrede"),
+        ("[Hesap 5](https://t.me/kabusxkira/19)", "Gece Paketi Devrede"),
+        ("[Hesap 6](https://t.me/kabusxkira/22)", "Gece Paketi Devrede"),
+        ("[Hesap 7](https://t.me/kabusxkira/34)", "Gece Paketi Devrede"),
+        ("[Hesap 8](https://t.me/kabusxkira/40)", "Gece Paketi Devrede")
     ]
+
+    musait_hesaplar = []
+    mesgul_hesaplar = []
+
+    for link, label in tum_hesaplar:
+        if is_musait:
+            musait_hesaplar.append(link)
+        else:
+            mesgul_hesaplar.append(f"{link} - {label}")
 
     # Formatlama
     musait_text = "\n".join(musait_hesaplar) if musait_hesaplar else "Yok"
