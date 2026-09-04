@@ -10,12 +10,12 @@ BOT_TOKEN = "8897902804:AAGRP_5WH87wngvCczarPM1w5AF7u-uaAUc"
 CHANNEL_ID = "@kabusxkira"
 MESSAGE_ID = 47
 
-# Hedef Zamanlar (TSİ Üzerinden Sabit UTC Timestamp)
-# Hesap 5: 3 G, 7 Saat, 11 Dk, 47 Sn (07.09.2026 22:57:37 TSİ)
-HESAP5_TARGET_TS = 1788811057
+# Hedef Zamanlar (04.09.2026 15:49 TSİ anlık baslangicina gore)
+# Hesap 5: 3 G, 7 Saat, 11 Dk, 47 Sn
+HESAP5_TARGET_TS = 1788814847
 
-# Hesap 6: 1 G, 1 Saat, 27 Dk, 12 Sn (05.09.2026 17:13:02 TSİ)
-HESAP6_TARGET_TS = 1788617582
+# Hesap 6: 1 G, 1 Saat, 27 Dk, 12 Sn
+HESAP6_TARGET_TS = 1788621372
 
 def get_countdown(target_ts):
     now_utc = time.time()
@@ -46,56 +46,37 @@ def update_telegram_message():
     # Türkiye Saati (UTC+3)
     now_ts = time.time() + (3 * 3600)
     now = time.gmtime(now_ts)
-    
-    current_hour = now.tm_hour
     time_str = time.strftime('%d.%m.%Y %H:%M:%S', now)
-    
-    # Otomatik Zaman Kuralları
-    gece_status = "musait" if current_hour >= 10 else "mesgul"
-    ekstra_status = "musait" if current_hour >= 13 else "mesgul"
 
+    # 🟢 Sadece Hesap 1 Müsait
     musait_hesaplar = [
         "[Hesap 1](https://t.me/kabusxkira/3)"
     ]
     
     mesgul_hesaplar = []
 
-    # 1. Ekstra Gece Paketi Hesapları (2, 3, 4)
-    ekstra_list = [
-        ("[Hesap 2](https://t.me/kabusxkira/10)", "Ekstra Gece Paketi Devrede"),
-        ("[Hesap 3](https://t.me/kabusxkira/12)", "Ekstra Gece Paketi Devrede"),
-        ("[Hesap 4](https://t.me/kabusxkira/14)", "Ekstra Gece Paketi Devrede")
-    ]
-    for link, label in ekstra_list:
-        if ekstra_status == "musait":
-            musait_hesaplar.append(link)
-        else:
-            mesgul_hesaplar.append(f"{link} - {label}")
+    # 1. Ekstra Gece Paketi Hesapları (Sabit Meşgul)
+    mesgul_hesaplar.append("[Hesap 2](https://t.me/kabusxkira/10) - Ekstra Gece Paketi Devrede")
+    mesgul_hesaplar.append("[Hesap 3](https://t.me/kabusxkira/12) - Ekstra Gece Paketi Devrede")
+    mesgul_hesaplar.append("[Hesap 4](https://t.me/kabusxkira/14) - Ekstra Gece Paketi Devrede")
 
-    # 2. Hesap 5 Canlı Geri Sayım
+    # 2. Hesap 5 Canlı Geri Sayım (Süre bitince Müsait olur)
     hesap5_timer = get_countdown(HESAP5_TARGET_TS)
     if hesap5_timer:
         mesgul_hesaplar.append(f"[Hesap 5](https://t.me/kabusxkira/19) - {hesap5_timer}")
     else:
         musait_hesaplar.append("[Hesap 5](https://t.me/kabusxkira/19)")
 
-    # 3. Hesap 6 Canlı Geri Sayım
+    # 3. Hesap 6 Canlı Geri Sayım (Süre bitince Müsait olur)
     hesap6_timer = get_countdown(HESAP6_TARGET_TS)
     if hesap6_timer:
         mesgul_hesaplar.append(f"[Hesap 6](https://t.me/kabusxkira/22) - {hesap6_timer}")
     else:
         musait_hesaplar.append("[Hesap 6](https://t.me/kabusxkira/22)")
 
-    # 4. Gece Paketi Hesapları (7, 8)
-    gece_list = [
-        ("[Hesap 7](https://t.me/kabusxkira/34)", "Gece Paketi Devrede"),
-        ("[Hesap 8](https://t.me/kabusxkira/40)", "Gece Paketi Devrede")
-    ]
-    for link, label in gece_list:
-        if gece_status == "musait":
-            musait_hesaplar.append(link)
-        else:
-            mesgul_hesaplar.append(f"{link} - {label}")
+    # 4. Gece Paketi Hesapları (Sabit Meşgul)
+    mesgul_hesaplar.append("[Hesap 7](https://t.me/kabusxkira/34) - Gece Paketi Devrede")
+    mesgul_hesaplar.append("[Hesap 8](https://t.me/kabusxkira/40) - Gece Paketi Devrede")
 
     # Formatlama
     musait_text = "\n".join(musait_hesaplar) if musait_hesaplar else "Yok"
