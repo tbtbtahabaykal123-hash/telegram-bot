@@ -10,7 +10,7 @@ BOT_TOKEN = "8897902804:AAGRP_5WH87wngvCczarPM1w5AF7u-uaAUc"
 CHANNEL_ID = "@kabusxkira"
 MESSAGE_ID = 47
 
-# Hedef Zamanlar (04.09.2026 15:49 TSİ anlık baslangicina gore)
+# Hedef Zamanlar
 # Hesap 5: 3 G, 7 Saat, 11 Dk, 47 Sn
 HESAP5_TARGET_TS = 1788814847
 
@@ -48,9 +48,10 @@ def update_telegram_message():
     now = time.gmtime(now_ts)
     time_str = time.strftime('%d.%m.%Y %H:%M:%S', now)
 
-    # 🟢 Sadece Hesap 1 Müsait
+    # 🟢 Müsait Hesaplar (1 ve Yeni Eklenen 9)
     musait_hesaplar = [
-        "[Hesap 1](https://t.me/kabusxkira/3)"
+        "[Hesap 1](https://t.me/kabusxkira/3)",
+        "[Hesap 9](https://t.me/kabusxkira/49)"
     ]
     
     mesgul_hesaplar = []
@@ -60,14 +61,14 @@ def update_telegram_message():
     mesgul_hesaplar.append("[Hesap 3](https://t.me/kabusxkira/12) - Ekstra Gece Paketi Devrede")
     mesgul_hesaplar.append("[Hesap 4](https://t.me/kabusxkira/14) - Ekstra Gece Paketi Devrede")
 
-    # 2. Hesap 5 Canlı Geri Sayım (Süre bitince Müsait olur)
+    # 2. Hesap 5 Canlı Geri Sayım
     hesap5_timer = get_countdown(HESAP5_TARGET_TS)
     if hesap5_timer:
         mesgul_hesaplar.append(f"[Hesap 5](https://t.me/kabusxkira/19) - {hesap5_timer}")
     else:
         musait_hesaplar.append("[Hesap 5](https://t.me/kabusxkira/19)")
 
-    # 3. Hesap 6 Canlı Geri Sayım (Süre bitince Müsait olur)
+    # 3. Hesap 6 Canlı Geri Sayım
     hesap6_timer = get_countdown(HESAP6_TARGET_TS)
     if hesap6_timer:
         mesgul_hesaplar.append(f"[Hesap 6](https://t.me/kabusxkira/22) - {hesap6_timer}")
