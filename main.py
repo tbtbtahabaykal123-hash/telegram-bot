@@ -9,11 +9,11 @@ app = Flask(__name__)
 BOT_TOKEN = "8897902804:AAGRP_5WH87wngvCczarPM1w5AF7u-uaAUc"
 CHANNEL_ID = "@kabusxkira"
 
-MESSAGE_ID = None
+# Doğru Mesaj ID
+MESSAGE_ID = 52
 
-# Hedef Zamanlar
+# Hedef Zaman (Hesap 5 Kiralama Bitişi)
 HESAP5_TARGET_TS = 1788814847
-HESAP6_TARGET_TS = 1788621372
 
 def get_countdown(target_ts):
     now_utc = time.time()
@@ -41,59 +41,55 @@ def get_countdown(target_ts):
     return " ".join(parts) + " Var"
 
 def update_telegram_message():
-    global MESSAGE_ID
-    
+    # Türkiye Saati (UTC+3)
     now_ts = time.time() + (3 * 3600)
     now = time.gmtime(now_ts)
     current_hour = now.tm_hour
     time_str = time.strftime('%d.%m.%Y %H:%M:%S', now)
 
-    # Otomatik Saat Kontrolleri
-    gece_status = "musait" if current_hour >= 10 else "mesgul"
-    ekstra_status = "musait" if current_hour >= 13 else "mesgul"
+    # Otomatik Zaman Kontrolü (00:00 - 10:00 / 13:00 Meşgul)
+    gece_mesgul = current_hour < 10
+    ekstra_mesgul = current_hour < 13
 
     musait_hesaplar = []
     mesgul_hesaplar = []
 
-    # 1. Gece Paketindeki Temel Hesaplar (1 ve 9)
-    mesgul_hesaplar.append("[Hesap 1](https://t.me/kabusxkira/3) - Gece Paketi Devrede")
-    mesgul_hesaplar.append("[Hesap 9](https://t.me/kabusxkira/49) - Gece Paketi Devrede")
+    # Standart Gece Paketleri (1, 6, 7, 8, 9)
+    gece_hesaplari = [
+        ("[Hesap 1](https://t.me/kabusxkira/3)", "Gece Paketi Devrede"),
+        ("[Hesap 6](https://t.me/kabusxkira/22)", "Gece Paketi Devrede"),
+        ("[Hesap 7](https://t.me/kabusxkira/34)", "Gece Paketi Devrede"),
+        ("[Hesap 8](https://t.me/kabusxkira/40)", "Gece Paketi Devrede"),
+        ("[Hesap 9](https://t.me/kabusxkira/49)", "Gece Paketi Devrede")
+    ]
 
-    # 2. Ekstra Gece Paketi Hesapları (2, 3, 4)
-    ekstra_list = [
+    # Ekstra Gece Paketleri (2, 3, 4)
+    ekstra_hesaplar = [
         ("[Hesap 2](https://t.me/kabusxkira/10)", "Ekstra Gece Paketi Devrede"),
         ("[Hesap 3](https://t.me/kabusxkira/12)", "Ekstra Gece Paketi Devrede"),
         ("[Hesap 4](https://t.me/kabusxkira/14)", "Ekstra Gece Paketi Devrede")
     ]
-    for link, label in ekstra_list:
-        if ekstra_status == "musait":
-            musait_hesaplar.append(link)
-        else:
-            mesgul_hesaplar.append(f"{link} - {label}")
 
-    # 3. Sayaçlı Hesaplar (5, 6)
+    # Standart Gece Paketlerini Kontrol Et
+    for link, label in gece_hesaplari:
+        if gece_mesgul:
+            mesgul_hesaplar.append(f"{link} - {label}")
+        else:
+            musait_hesaplar.append(link)
+
+    # Ekstra Gece Paketlerini Kontrol Et
+    for link, label in ekstra_hesaplar:
+        if ekstra_mesgul:
+            mesgul_hesaplar.append(f"{link} - {label}")
+        else:
+            musait_hesaplar.append(link)
+
+    # Sayaçlı Hesap (Hesap 5)
     hesap5_timer = get_countdown(HESAP5_TARGET_TS)
     if hesap5_timer:
         mesgul_hesaplar.append(f"[Hesap 5](https://t.me/kabusxkira/19) - {hesap5_timer}")
     else:
         musait_hesaplar.append("[Hesap 5](https://t.me/kabusxkira/19)")
-
-    hesap6_timer = get_countdown(HESAP6_TARGET_TS)
-    if hesap6_timer:
-        mesgul_hesaplar.append(f"[Hesap 6](https://t.me/kabusxkira/22) - {hesap6_timer}")
-    else:
-        musait_hesaplar.append("[Hesap 6](https://t.me/kabusxkira/22)")
-
-    # 4. Gece Paketi Hesapları (7, 8)
-    gece_list = [
-        ("[Hesap 7](https://t.me/kabusxkira/34)", "Gece Paketi Devrede"),
-        ("[Hesap 8](https://t.me/kabusxkira/40)", "Gece Paketi Devrede")
-    ]
-    for link, label in gece_list:
-        if gece_status == "musait":
-            musait_hesaplar.append(link)
-        else:
-            mesgul_hesaplar.append(f"{link} - {label}")
 
     musait_text = "\n".join(musait_hesaplar) if musait_hesaplar else "Yok"
     mesgul_text = "\n".join(mesgul_hesaplar) if mesgul_hesaplar else "Yok"
@@ -119,28 +115,17 @@ Hesap no'ların üzerine tıklayarak hesaplara hızlı bir şekilde ulaşabilirs
 Hemen kiralamak için;
 ✅ @btkabus"""
 
-    if MESSAGE_ID is None:
-        url = f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage"
-        payload = {
-            "chat_id": CHANNEL_ID,
-            "text": text,
-            "parse_mode": "Markdown",
-            "disable_web_page_preview": True
-        }
-    else:
-        url = f"https://api.telegram.org/bot{BOT_TOKEN}/editMessageText"
-        payload = {
-            "chat_id": CHANNEL_ID,
-            "message_id": MESSAGE_ID,
-            "text": text,
-            "parse_mode": "Markdown",
-            "disable_web_page_preview": True
-        }
+    url = f"https://api.telegram.org/bot{BOT_TOKEN}/editMessageText"
+    payload = {
+        "chat_id": CHANNEL_ID,
+        "message_id": MESSAGE_ID,
+        "text": text,
+        "parse_mode": "Markdown",
+        "disable_web_page_preview": True
+    }
     
     try:
         res = requests.post(url, json=payload, timeout=10).json()
-        if res.get("ok") and MESSAGE_ID is None:
-            MESSAGE_ID = res["result"]["message_id"]
         return res
     except Exception as e:
         return {"error": str(e)}
