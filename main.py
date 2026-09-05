@@ -9,10 +9,10 @@ app = Flask(__name__)
 BOT_TOKEN = "8897902804:AAGRP_5WH87wngvCczarPM1w5AF7u-uaAUc"
 CHANNEL_ID = "@kabusxkira"
 
-# Doğru Mesaj ID
+# Güncellenecek Mesaj ID
 MESSAGE_ID = 52
 
-# Hedef Zaman (Hesap 5 Kiralama Bitişi)
+# Hedef Zaman (Hesap 5 Bitiş Süresi)
 HESAP5_TARGET_TS = 1788814847
 
 def get_countdown(target_ts):
@@ -44,47 +44,25 @@ def update_telegram_message():
     # Türkiye Saati (UTC+3)
     now_ts = time.time() + (3 * 3600)
     now = time.gmtime(now_ts)
-    current_hour = now.tm_hour
     time_str = time.strftime('%d.%m.%Y %H:%M:%S', now)
 
-    # Otomatik Zaman Kontrolü (00:00 - 10:00 / 13:00 Meşgul)
-    gece_mesgul = current_hour < 10
-    ekstra_mesgul = current_hour < 13
-
-    musait_hesaplar = []
-    mesgul_hesaplar = []
-
-    # Standart Gece Paketleri (1, 6, 7, 8, 9)
-    gece_hesaplari = [
-        ("[Hesap 1](https://t.me/kabusxkira/3)", "Gece Paketi Devrede"),
-        ("[Hesap 6](https://t.me/kabusxkira/22)", "Gece Paketi Devrede"),
-        ("[Hesap 7](https://t.me/kabusxkira/34)", "Gece Paketi Devrede"),
-        ("[Hesap 8](https://t.me/kabusxkira/40)", "Gece Paketi Devrede"),
-        ("[Hesap 9](https://t.me/kabusxkira/49)", "Gece Paketi Devrede")
+    # 1. Müsait Hesaplar
+    musait_hesaplar = [
+        "[Hesap 1](https://t.me/kabusxkira/3)"
     ]
 
-    # Ekstra Gece Paketleri (2, 3, 4)
-    ekstra_hesaplar = [
-        ("[Hesap 2](https://t.me/kabusxkira/10)", "Ekstra Gece Paketi Devrede"),
-        ("[Hesap 3](https://t.me/kabusxkira/12)", "Ekstra Gece Paketi Devrede"),
-        ("[Hesap 4](https://t.me/kabusxkira/14)", "Ekstra Gece Paketi Devrede")
+    # 2. Gece Paketindeki Meşgul Hesaplar
+    mesgul_hesaplar = [
+        "[Hesap 2](https://t.me/kabusxkira/10) - Gece Paketi Devrede",
+        "[Hesap 3](https://t.me/kabusxkira/12) - Gece Paketi Devrede",
+        "[Hesap 4](https://t.me/kabusxkira/14) - Gece Paketi Devrede",
+        "[Hesap 6](https://t.me/kabusxkira/22) - Gece Paketi Devrede",
+        "[Hesap 7](https://t.me/kabusxkira/34) - Gece Paketi Devrede",
+        "[Hesap 8](https://t.me/kabusxkira/40) - Gece Paketi Devrede",
+        "[Hesap 9](https://t.me/kabusxkira/49) - Gece Paketi Devrede"
     ]
 
-    # Standart Gece Paketlerini Kontrol Et
-    for link, label in gece_hesaplari:
-        if gece_mesgul:
-            mesgul_hesaplar.append(f"{link} - {label}")
-        else:
-            musait_hesaplar.append(link)
-
-    # Ekstra Gece Paketlerini Kontrol Et
-    for link, label in ekstra_hesaplar:
-        if ekstra_mesgul:
-            mesgul_hesaplar.append(f"{link} - {label}")
-        else:
-            musait_hesaplar.append(link)
-
-    # Sayaçlı Hesap (Hesap 5)
+    # 3. Sayaçlı Hesap (Hesap 5)
     hesap5_timer = get_countdown(HESAP5_TARGET_TS)
     if hesap5_timer:
         mesgul_hesaplar.append(f"[Hesap 5](https://t.me/kabusxkira/19) - {hesap5_timer}")
