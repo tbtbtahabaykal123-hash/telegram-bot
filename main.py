@@ -9,7 +9,6 @@ app = Flask(__name__)
 BOT_TOKEN = "8897902804:AAGRP_5WH87wngvCczarPM1w5AF7u-uaAUc"
 CHANNEL_ID = "@kabusxkira"
 
-# Yeni mesaj ID'si buraya kaydedilecek
 MESSAGE_ID = None
 
 # Hedef Zamanlar
@@ -46,8 +45,14 @@ def update_telegram_message():
     
     now_ts = time.time() + (3 * 3600)
     now = time.gmtime(now_ts)
+    current_hour = now.tm_hour
     time_str = time.strftime('%d.%m.%Y %H:%M:%S', now)
 
+    # Otomatik Saat Kontrolleri
+    gece_status = "musait" if current_hour >= 10 else "mesgul"
+    ekstra_status = "musait" if current_hour >= 13 else "mesgul"
+
+    # Sabit Müsait Hesaplar
     musait_hesaplar = [
         "[Hesap 1](https://t.me/kabusxkira/3)",
         "[Hesap 9](https://t.me/kabusxkira/49)"
@@ -55,10 +60,19 @@ def update_telegram_message():
     
     mesgul_hesaplar = []
 
-    mesgul_hesaplar.append("[Hesap 2](https://t.me/kabusxkira/10) - Ekstra Gece Paketi Devrede")
-    mesgul_hesaplar.append("[Hesap 3](https://t.me/kabusxkira/12) - Ekstra Gece Paketi Devrede")
-    mesgul_hesaplar.append("[Hesap 4](https://t.me/kabusxkira/14) - Ekstra Gece Paketi Devrede")
+    # 1. Ekstra Gece Paketi Hesapları (2, 3, 4) - 13:00'a kadar Meşgul
+    ekstra_list = [
+        ("[Hesap 2](https://t.me/kabusxkira/10)", "Ekstra Gece Paketi Devrede"),
+        ("[Hesap 3](https://t.me/kabusxkira/12)", "Ekstra Gece Paketi Devrede"),
+        ("[Hesap 4](https://t.me/kabusxkira/14)", "Ekstra Gece Paketi Devrede")
+    ]
+    for link, label in ekstra_list:
+        if ekstra_status == "musait":
+            musait_hesaplar.append(link)
+        else:
+            mesgul_hesaplar.append(f"{link} - {label}")
 
+    # 2. Sayaçlı Hesaplar (5, 6)
     hesap5_timer = get_countdown(HESAP5_TARGET_TS)
     if hesap5_timer:
         mesgul_hesaplar.append(f"[Hesap 5](https://t.me/kabusxkira/19) - {hesap5_timer}")
@@ -71,8 +85,16 @@ def update_telegram_message():
     else:
         musait_hesaplar.append("[Hesap 6](https://t.me/kabusxkira/22)")
 
-    mesgul_hesaplar.append("[Hesap 7](https://t.me/kabusxkira/34) - Gece Paketi Devrede")
-    mesgul_hesaplar.append("[Hesap 8](https://t.me/kabusxkira/40) - Gece Paketi Devrede")
+    # 3. Gece Paketi Hesapları (7, 8) - 10:00'a kadar Meşgul
+    gece_list = [
+        ("[Hesap 7](https://t.me/kabusxkira/34)", "Gece Paketi Devrede"),
+        ("[Hesap 8](https://t.me/kabusxkira/40)", "Gece Paketi Devrede")
+    ]
+    for link, label in gece_list:
+        if gece_status == "musait":
+            musait_hesaplar.append(link)
+        else:
+            mesgul_hesaplar.append(f"{link} - {label}")
 
     musait_text = "\n".join(musait_hesaplar) if musait_hesaplar else "Yok"
     mesgul_text = "\n".join(mesgul_hesaplar) if mesgul_hesaplar else "Yok"
@@ -98,7 +120,6 @@ Hesap no'ların üzerine tıklayarak hesaplara hızlı bir şekilde ulaşabilirs
 Hemen kiralamak için;
 ✅ @btkabus"""
 
-    # Mesaj ID yoksa Yeni Mesaj At, varsa Mevcut Mesajı Düzenle
     if MESSAGE_ID is None:
         url = f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage"
         payload = {
@@ -120,9 +141,7 @@ Hemen kiralamak için;
     try:
         res = requests.post(url, json=payload, timeout=10).json()
         if res.get("ok") and MESSAGE_ID is None:
-            # Yeni atılan mesajın ID'sini kap ve bundan sonra onu güncelle
             MESSAGE_ID = res["result"]["message_id"]
-            print(f"YENI MESAJ ATILDI, ID: {MESSAGE_ID}")
         return res
     except Exception as e:
         return {"error": str(e)}
