@@ -42,46 +42,46 @@ def get_countdown(target_ts):
     return " ".join(parts) + " Var"
 
 def update_telegram_message():
-    # Türkiye Saati (UTC+3 Tam Hesaplama)
+    # Türkiye Saati (UTC+3)
     tz_tr = timezone(timedelta(hours=3))
     now_tr = datetime.now(tz_tr)
     current_hour = now_tr.hour
     time_str = now_tr.strftime('%d.%m.%Y %H:%M:%S')
 
-    # Gece Paketi Saat Kuralları:
-    # Standart Gece Paketleri (6, 7, 8, 9): 22:00 - 10:00 arası MEŞGUL
-    # Ekstra Gece Paketleri (2, 3, 4): 22:00 - 13:00 arası MEŞGUL
+    # Gece Paketi Saat Kontrolleri:
+    # Standart Gece Paketleri (1, 2, 3, 4): 22:00 - 10:00 arası MEŞGUL
+    # Ekstra Gece Paketleri (6, 7, 8): 22:00 - 13:00 arası MEŞGUL
     gece_mesgul = (current_hour >= 22 or current_hour < 10)
     ekstra_mesgul = (current_hour >= 22 or current_hour < 13)
 
     musait_hesaplar = [
-        "[Hesap 1](https://t.me/kabusxkira/3)"
+        "[Hesap 9](https://t.me/kabusxkira/49)"
     ]
     mesgul_hesaplar = []
 
-    # Standart Gece Paketleri
+    # Standart Gece Paketleri (1, 2, 3, 4)
     gece_hesaplari = [
-        ("[Hesap 6](https://t.me/kabusxkira/22)", "Gece Paketi Devrede"),
-        ("[Hesap 7](https://t.me/kabusxkira/34)", "Gece Paketi Devrede"),
-        ("[Hesap 8](https://t.me/kabusxkira/40)", "Gece Paketi Devrede"),
-        ("[Hesap 9](https://t.me/kabusxkira/49)", "Gece Paketi Devrede")
+        ("[Hesap 1](https://t.me/kabusxkira/3)", "Gece Paketi Devrede"),
+        ("[Hesap 2](https://t.me/kabusxkira/10)", "Gece Paketi Devrede"),
+        ("[Hesap 3](https://t.me/kabusxkira/12)", "Gece Paketi Devrede"),
+        ("[Hesap 4](https://t.me/kabusxkira/14)", "Gece Paketi Devrede")
     ]
 
-    # Ekstra Gece Paketleri
+    # Ekstra Gece Paketleri (6, 7, 8)
     ekstra_hesaplar = [
-        ("[Hesap 2](https://t.me/kabusxkira/10)", "Ekstra Gece Paketi Devrede"),
-        ("[Hesap 3](https://t.me/kabusxkira/12)", "Ekstra Gece Paketi Devrede"),
-        ("[Hesap 4](https://t.me/kabusxkira/14)", "Ekstra Gece Paketi Devrede")
+        ("[Hesap 6](https://t.me/kabusxkira/22)", "Ekstra Gece Paketi Devrede"),
+        ("[Hesap 7](https://t.me/kabusxkira/34)", "Ekstra Gece Paketi Devrede"),
+        ("[Hesap 8](https://t.me/kabusxkira/40)", "Ekstra Gece Paketi Devrede")
     ]
 
-    # Standart Paket Kontrolü
+    # Standart Gece Paketi Kontrolü
     for link, label in gece_hesaplari:
         if gece_mesgul:
             mesgul_hesaplar.append(f"{link} - {label}")
         else:
             musait_hesaplar.append(link)
 
-    # Ekstra Paket Kontrolü
+    # Ekstra Gece Paketi Kontrolü
     for link, label in ekstra_hesaplar:
         if ekstra_mesgul:
             mesgul_hesaplar.append(f"{link} - {label}")
