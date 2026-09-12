@@ -7,67 +7,55 @@ from threading import Thread
 
 app = Flask(__name__)
 
-BOT_TOKEN = "8897902804:AAGRP_5WH87wngvCczarPM1w5AF7u-uaAUc"
+# Güncel Bot Tokenı
+BOT_TOKEN = "8897902804:AAFwTzAtr1qx6Umzkkig4Jz6GvsdIwVjORQ"
 CHANNEL_ID = "@kabusxkira"
 
-# Güncellenecek Sabit Mesaj ID
-MESSAGE_ID = 52
+# Aktif takip edilen mesaj ID'si (Silinirse veya yoksa otomatik sıfırlanır)
+MESSAGE_ID = None
 
-# Hedef Zaman (Hesap 5 Kiralama Bitişi)
-HESAP5_TARGET_TS = 1788814847
-
-def get_countdown(target_ts):
-    now_utc = time.time()
-    diff = int(target_ts - now_utc)
-    
-    if diff <= 0:
-        return None
-    
-    days = diff // 86400
-    rem = diff % 86400
-    hours = rem // 3600
-    rem %= 3600
-    minutes = rem // 60
-    seconds = rem % 60
-    
-    parts = []
-    if days > 0:
-        parts.append(f"{days} G")
-    if hours > 0 or days > 0:
-        parts.append(f"{hours} Saat")
-    if minutes > 0 or hours > 0 or days > 0:
-        parts.append(f"{minutes} Dk")
-    parts.append(f"{seconds} Sn")
-    
-    return " ".join(parts) + " Var"
+def send_new_message(text):
+    global MESSAGE_ID
+    url = f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage"
+    payload = {
+        "chat_id": CHANNEL_ID,
+        "text": text,
+        "parse_mode": "Markdown",
+        "disable_web_page_preview": True
+    }
+    try:
+        res = requests.post(url, json=payload, timeout=10).json()
+        if res.get("ok"):
+            MESSAGE_ID = res["result"]["message_id"]
+            print(f"YENİ MESAJ OLUŞTURULDU! MESSAGE_ID: {MESSAGE_ID}")
+            return True
+    except Exception as e:
+        print("Yeni mesaj atılırken hata oluştu:", e)
+    return False
 
 def update_telegram_message():
+    global MESSAGE_ID
+
     # Türkiye Saati (UTC+3)
     tz_tr = timezone(timedelta(hours=3))
     now_tr = datetime.now(tz_tr)
     time_str = now_tr.strftime('%d.%m.%Y %H:%M:%S')
 
-    # SABİT LİSTELEME (Saat kontrolü kaldırıldı)
+    # Güncel Durumlar (Liste 3 Meşgul, Diğerleri Müsait)
     musait_hesaplar = [
+        "[Hesap 1](https://t.me/kabusxkira/3)",
+        "[Hesap 2](https://t.me/kabusxkira/10)",
+        "[Hesap 4](https://t.me/kabusxkira/14)",
+        "[Hesap 5](https://t.me/kabusxkira/19)",
+        "[Hesap 6](https://t.me/kabusxkira/22)",
+        "[Hesap 7](https://t.me/kabusxkira/34)",
+        "[Hesap 8](https://t.me/kabusxkira/40)",
         "[Hesap 9](https://t.me/kabusxkira/49)"
     ]
 
     mesgul_hesaplar = [
-        "[Hesap 1](https://t.me/kabusxkira/3) - Gece Paketi Devrede",
-        "[Hesap 2](https://t.me/kabusxkira/10) - Gece Paketi Devrede",
-        "[Hesap 3](https://t.me/kabusxkira/12) - Gece Paketi Devrede",
-        "[Hesap 4](https://t.me/kabusxkira/14) - Gece Paketi Devrede",
-        "[Hesap 6](https://t.me/kabusxkira/22) - Ekstra Gece Paketi Devrede",
-        "[Hesap 7](https://t.me/kabusxkira/34) - Ekstra Gece Paketi Devrede",
-        "[Hesap 8](https://t.me/kabusxkira/40) - Ekstra Gece Paketi Devrede"
+        "[Hesap 3](https://t.me/kabusxkira/12) - Gece Paketi Devrede"
     ]
-
-    # Sayaçlı Hesap (Hesap 5)
-    hesap5_timer = get_countdown(HESAP5_TARGET_TS)
-    if hesap5_timer:
-        mesgul_hesaplar.append(f"[Hesap 5](https://t.me/kabusxkira/19) - {hesap5_timer}")
-    else:
-        musait_hesaplar.append("[Hesap 5](https://t.me/kabusxkira/19)")
 
     musait_text = "\n".join(musait_hesaplar) if musait_hesaplar else "Yok"
     mesgul_text = "\n".join(mesgul_hesaplar) if mesgul_hesaplar else "Yok"
@@ -93,6 +81,11 @@ Hesap no'ların üzerine tıklayarak hesaplara hızlı bir şekilde ulaşabilirs
 Hemen kiralamak için;
 ✅ @btkabus"""
 
+    # Eğer henüz mesaj oluşturulmadıysa ilk mesajı gönder
+    if MESSAGE_ID is None:
+        send_new_message(text)
+        return {"status": "Yeni mesaj gönderildi", "message_id": MESSAGE_ID}
+
     url = f"https://api.telegram.org/bot{BOT_TOKEN}/editMessageText"
     payload = {
         "chat_id": CHANNEL_ID,
@@ -104,6 +97,10 @@ Hemen kiralamak için;
     
     try:
         res = requests.post(url, json=payload, timeout=10).json()
+        # Eğer mesaj silindiyse ya da düzenleme hatası alındıysa yeni mesaj at
+        if not res.get("ok"):
+            print("Düzenleme başarısız, yeni mesaj atılıyor... Hata:", res)
+            send_new_message(text)
         return res
     except Exception as e:
         return {"error": str(e)}
