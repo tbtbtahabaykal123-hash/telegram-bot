@@ -11,13 +11,16 @@ app = Flask(__name__)
 BOT_TOKEN = "8897902804:AAFwTzAtr1qx6Umzkkig4Jz6GvsdIwVjORQ"
 CHANNEL_ID = "@kabusxkira"
 
-MESSAGE_ID = None
+# Kilitlenen ve sadece düzenlenecek mesajın ID'si
+MESSAGE_ID = 58
 
 def get_message_text():
+    # Türkiye Saati (UTC+3)
     tz_tr = timezone(timedelta(hours=3))
     now_tr = datetime.now(tz_tr)
     time_str = now_tr.strftime('%d.%m.%Y %H:%M:%S')
 
+    # Güncel Durumlar (Liste 3 Meşgul, Diğerleri Müsait)
     musait_hesaplar = [
         "[Hesap 1](https://t.me/kabusxkira/3)",
         "[Hesap 2](https://t.me/kabusxkira/10)",
@@ -57,31 +60,8 @@ Hesap no'ların üzerine tıklayarak hesaplara hızlı bir şekilde ulaşabilirs
 Hemen kiralamak için;
 ✅ @btkabus"""
 
-def send_fresh_message():
-    global MESSAGE_ID
-    url = f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage"
-    payload = {
-        "chat_id": CHANNEL_ID,
-        "text": get_message_text(),
-        "parse_mode": "Markdown",
-        "disable_web_page_preview": True
-    }
-    try:
-        res = requests.post(url, json=payload, timeout=10).json()
-        if res.get("ok"):
-            MESSAGE_ID = res["result"]["message_id"]
-            print(f"YENİ MESAJ ATILDI. MESSAGE_ID: {MESSAGE_ID}")
-            return res
-    except Exception as e:
-        print("Mesaj atılamadı:", e)
-    return None
-
 def update_telegram_message():
-    global MESSAGE_ID
-
-    if MESSAGE_ID is None:
-        return send_fresh_message()
-
+    # Sadece ve sadece belirtilen MESSAGE_ID'yi düzenle
     url = f"https://api.telegram.org/bot{BOT_TOKEN}/editMessageText"
     payload = {
         "chat_id": CHANNEL_ID,
@@ -94,28 +74,34 @@ def update_telegram_message():
     try:
         res = requests.post(url, json=payload, timeout=10).json()
         if not res.get("ok"):
-            print("Düzenleme başarısız, sıfırdan mesaj atılıyor...")
-            return send_fresh_message()
+            print("Düzenleme başarısız. Hata:", res)
+        else:
+            print(f"Mesaj {MESSAGE_ID} başarıyla güncellendi.")
         return res
     except Exception as e:
+        print("Telegram API hatası:", e)
         return {"error": str(e)}
 
 def auto_loop():
-    time.sleep(3)
-    # İlk açılışta direk yeni mesaj at
-    send_fresh_message()
+    time.sleep(5)
+    # İlk açılışta direk mesajı güncelle
+    update_telegram_message()
     while True:
+        # Dakikada bir günceller
         time.sleep(60)
         status = update_telegram_message()
         print("OTOMATIK DÖNGÜ SONUCU:", status)
 
+# Otomatik döngüyü arka planda başlat
 Thread(target=auto_loop, daemon=True).start()
 
 @app.route('/')
 def home():
+    # Manuel tetikleme için
     status = update_telegram_message()
     return f"Guncelleme Tetiklendi: {status}"
 
 if __name__ == "__main__":
+    # Render için Port ayarı
     port = int(os.environ.get("PORT", 10000))
     app.run(host="0.0.0.0", port=port)
