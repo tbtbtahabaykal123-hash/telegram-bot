@@ -7,20 +7,15 @@ from threading import Thread
 
 app = Flask(__name__)
 
-# Render çevre değişkeninden token güvenli bir şekilde çekiliyor
 BOT_TOKEN = os.environ.get("BOT_TOKEN")
 CHANNEL_ID = "@kabusxkira"
-
-# Hedef Mesaj ID'miz
 MESSAGE_ID = 64
 
 def get_message_text():
-    # Türkiye Saati (UTC+3)
     tz_tr = timezone(timedelta(hours=3))
     now_tr = datetime.now(tz_tr)
     time_str = now_tr.strftime('%d.%m.%Y %H:%M:%S')
 
-    # Müsait Hesaplar (1, 2, 4, 8, 9)
     musait_hesaplar = [
         "[Hesap 1](https://t.me/kabusxkira/3)",
         "[Hesap 2](https://t.me/kabusxkira/10)",
@@ -29,7 +24,6 @@ def get_message_text():
         "[Hesap 9](https://t.me/kabusxkira/49)"
     ]
     
-    # Meşgul Hesaplar (3, 5, 6, 7 - Gece Paketi)
     mesgul_hesaplar = [
         "[Hesap 3](https://t.me/kabusxkira/12) (Gece Paketi)",
         "[Hesap 5](https://t.me/kabusxkira/19) (Gece Paketi)",
@@ -37,28 +31,18 @@ def get_message_text():
         "[Hesap 7](https://t.me/kabusxkira/34) (Gece Paketi)"
     ]
 
-    musait_text = "\n".join(musait_hesaplar) if musait_hesaplar else "Yok"
-    mesgul_text = "\n".join(mesgul_hesaplar) if mesgul_hesaplar else "Yok"
+    musait_text = "\n".join(musait_hesaplar)
+    mesgul_text = "\n".join(mesgul_hesaplar)
 
     return f"""KABUS RENT
 
-┌──────────────────────┐
-  🟢 Müsait Hesaplar
-└──────────────────────┘
-
+🟢 Müsait Hesaplar:
 {musait_text}
 
-┌──────────────────────┐
-  🔴 Meşgul Hesaplar
-└──────────────────────┘
-
+🔴 Meşgul Hesaplar:
 {mesgul_text}
 
 ⏱️ Son Güncelleme: {time_str}
-
-Hesap no'ların üzerine tıklayarak hesaplara hızlı bir şekilde ulaşabilirsiniz.
-
-Hemen kiralamak için;
 ✅ @btkabus"""
 
 def update_telegram_message():
@@ -77,13 +61,10 @@ def update_telegram_message():
     
     try:
         res = requests.post(url, json=payload, timeout=10).json()
-        if not res.get("ok"):
-            print("Düzenleme başarısız. Hata:", res)
-        else:
-            print(f"Mesaj {MESSAGE_ID} başarıyla güncellendi.")
+        print("Telegram Yanıtı:", res)
         return res
     except Exception as e:
-        print("Telegram API hatası:", e)
+        print("Hata:", e)
         return {"error": str(e)}
 
 def auto_loop():
@@ -91,8 +72,7 @@ def auto_loop():
     update_telegram_message()
     while True:
         time.sleep(60)
-        status = update_telegram_message()
-        print("OTOMATIK DÖNGÜ SONUCU:", status)
+        update_telegram_message()
 
 Thread(target=auto_loop, daemon=True).start()
 
