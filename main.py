@@ -9,7 +9,7 @@ app = Flask(__name__)
 
 BOT_TOKEN = os.environ.get("BOT_TOKEN")
 CHANNEL_ID = "@kabusxkira"
-MESSAGE_ID = 64
+MESSAGE_ID = 65
 
 def get_message_text():
     tz_tr = timezone(timedelta(hours=3))
@@ -36,51 +36,24 @@ def get_message_text():
 
     return f"""KABUS RENT
 
-🟢 Müsait Hesaplar:
+┌──────────────────────┐
+  🟢 Müsait Hesaplar
+└──────────────────────┘
+
 {musait_text}
 
-🔴 Meşgul Hesaplar:
+┌──────────────────────┐
+  🔴 Meşgul Hesaplar
+└──────────────────────┘
+
 {mesgul_text}
 
 ⏱️ Son Güncelleme: {time_str}
+
+Hesap no'ların üzerine tıklayarak hesaplara hızlı bir şekilde ulaşabilirsiniz.
+
+Hemen kiralamak için;
 ✅ @btkabus"""
 
 def update_telegram_message():
-    if not BOT_TOKEN:
-        print("HATA: BOT_TOKEN bulunamadı!")
-        return {"error": "Token yok"}
-
-    url = f"https://api.telegram.org/bot{BOT_TOKEN}/editMessageText"
-    payload = {
-        "chat_id": CHANNEL_ID,
-        "message_id": MESSAGE_ID,
-        "text": get_message_text(),
-        "parse_mode": "Markdown",
-        "disable_web_page_preview": True
-    }
-    
-    try:
-        res = requests.post(url, json=payload, timeout=10).json()
-        print("Telegram Yanıtı:", res)
-        return res
-    except Exception as e:
-        print("Hata:", e)
-        return {"error": str(e)}
-
-def auto_loop():
-    time.sleep(5)
-    update_telegram_message()
-    while True:
-        time.sleep(60)
-        update_telegram_message()
-
-Thread(target=auto_loop, daemon=True).start()
-
-@app.route('/')
-def home():
-    status = update_telegram_message()
-    return f"Guncelleme Tetiklendi: {status}"
-
-if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 10000))
-    app.run(host="0.0.0.0", port=port)
+    if not BOT_
