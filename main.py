@@ -6,15 +6,18 @@ from datetime import datetime, timezone, timedelta
 from http.server import HTTPServer, BaseHTTPRequestHandler
 from threading import Thread
 
-BOT_TOKEN = os.environ.get("BOT_TOKEN")
+# Bot Token'ımız ve Kanal Bilgilerimiz
+BOT_TOKEN = "9180537800:AAFE0VCxfBhacAiCprvpgQUXZf-gbot0LiQ"
 CHANNEL_ID = "@kabusxkira"
 MESSAGE_ID = 65
 
 def get_message_text():
+    # Türkiye Saati (UTC+3)
     tz_tr = timezone(timedelta(hours=3))
     now_tr = datetime.now(tz_tr)
     time_str = now_tr.strftime('%d.%m.%Y %H:%M:%S')
 
+    # Müsait Hesaplar
     musait_hesaplar = [
         "[Hesap 1](https://t.me/kabusxkira/3)",
         "[Hesap 2](https://t.me/kabusxkira/10)",
@@ -23,6 +26,7 @@ def get_message_text():
         "[Hesap 9](https://t.me/kabusxkira/49)"
     ]
     
+    # Meşgul Hesaplar (Gece Paketi)
     mesgul_hesaplar = [
         "[Hesap 3](https://t.me/kabusxkira/12) (Gece Paketi)",
         "[Hesap 5](https://t.me/kabusxkira/19) (Gece Paketi)",
