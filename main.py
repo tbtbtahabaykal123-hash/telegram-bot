@@ -102,4 +102,9 @@ class SimpleHandler(BaseHTTPRequestHandler):
 
 def run_server():
     port = int(os.environ.get("PORT", 10000))
-    server = HTTPServer(("0.0.0
+    server = HTTPServer(("0.0.0.0", port), SimpleHandler)
+    print(f"Sunucu {port} portunda çalışıyor...")
+    server.serve_forever()
+
+if __name__ == "__main__":
+    run_server()
