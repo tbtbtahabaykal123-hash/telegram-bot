@@ -15,18 +15,16 @@ def get_message_text():
     now_tr = datetime.now(tz_tr)
     time_str = now_tr.strftime('%d.%m.%Y %H:%M:%S')
 
-    # Müsait Hesap Yok (Hepsi Meşgul)
     musait_hesaplar = []
     
-    # Tüm Hesaplar Meşgul Durumda ve Paketleriyle
     mesgul_hesaplar = [
-        "[Hesap 1](https://t.me/kabusxkira/3) - 24s 00dk 00sn kaldı (1 Günlük Kira)",
+        "[Hesap 1](https://t.me/kabusxkira/3) - 24s 00dk 00sn kaldı",
         "[Hesap 2](https://t.me/kabusxkira/10) (Ekstra Gece Paketi)",
         "[Hesap 3](https://t.me/kabusxkira/12) (Ekstra Gece Paketi)",
-        "[Hesap 4](https://t.me/kabusxkira/14) - 24s 00dk 00sn kaldı (1 Günlük Kira)",
+        "[Hesap 4](https://t.me/kabusxkira/14) - 24s 00dk 00sn kaldı",
         "[Hesap 5](https://t.me/kabusxkira/19) (Gece Paketi)",
         "[Hesap 6](https://t.me/kabusxkira/22) (Gece Paketi)",
-        "[Hesap 7](https://t.me/kabusxkira/34) - 24s 00dk 00sn kaldı (1 Günlük Kira)",
+        "[Hesap 7](https://t.me/kabusxkira/34) - 24s 00dk 00sn kaldı",
         "[Hesap 8](https://t.me/kabusxkira/40) (Gece Paketi)",
         "[Hesap 9](https://t.me/kabusxkira/49) (Gece Paketi)"
     ]
@@ -104,9 +102,4 @@ class SimpleHandler(BaseHTTPRequestHandler):
 
 def run_server():
     port = int(os.environ.get("PORT", 10000))
-    server = HTTPServer(("0.0.0.0", port), SimpleHandler)
-    print(f"Sunucu {port} portunda çalışıyor...")
-    server.serve_forever()
-
-if __name__ == "__main__":
-    run_server()
+    server = HTTPServer(("0.0.0
