@@ -6,35 +6,32 @@ from datetime import datetime, timezone, timedelta
 from http.server import HTTPServer, BaseHTTPRequestHandler
 from threading import Thread
 
-# Bot Token'ımız ve Kanal Bilgilerimiz
 BOT_TOKEN = "9180537800:AAFE0VCxfBhacAiCprvpgQUXZf-gbot0LiQ"
 CHANNEL_ID = "@kabusxkira"
 MESSAGE_ID = 65
 
 def get_message_text():
-    # Türkiye Saati (UTC+3)
     tz_tr = timezone(timedelta(hours=3))
     now_tr = datetime.now(tz_tr)
     time_str = now_tr.strftime('%d.%m.%Y %H:%M:%S')
 
-    # Müsait Hesaplar
-    musait_hesaplar = [
-        "[Hesap 1](https://t.me/kabusxkira/3)",
-        "[Hesap 2](https://t.me/kabusxkira/10)",
-        "[Hesap 4](https://t.me/kabusxkira/14)",
-        "[Hesap 8](https://t.me/kabusxkira/40)",
-        "[Hesap 9](https://t.me/kabusxkira/49)"
-    ]
+    # Müsait Hesap Yok (Hepsi Meşgul)
+    musait_hesaplar = []
     
-    # Meşgul Hesaplar (Gece Paketi)
+    # Tüm Hesaplar Meşgul Durumda ve Paketleriyle
     mesgul_hesaplar = [
-        "[Hesap 3](https://t.me/kabusxkira/12) (Gece Paketi)",
+        "[Hesap 1](https://t.me/kabusxkira/3) - 24s 00dk 00sn kaldı (1 Günlük Kira)",
+        "[Hesap 2](https://t.me/kabusxkira/10) (Ekstra Gece Paketi)",
+        "[Hesap 3](https://t.me/kabusxkira/12) (Ekstra Gece Paketi)",
+        "[Hesap 4](https://t.me/kabusxkira/14) - 24s 00dk 00sn kaldı (1 Günlük Kira)",
         "[Hesap 5](https://t.me/kabusxkira/19) (Gece Paketi)",
         "[Hesap 6](https://t.me/kabusxkira/22) (Gece Paketi)",
-        "[Hesap 7](https://t.me/kabusxkira/34) (Gece Paketi)"
+        "[Hesap 7](https://t.me/kabusxkira/34) - 24s 00dk 00sn kaldı (1 Günlük Kira)",
+        "[Hesap 8](https://t.me/kabusxkira/40) (Gece Paketi)",
+        "[Hesap 9](https://t.me/kabusxkira/49) (Gece Paketi)"
     ]
 
-    musait_text = "\n".join(musait_hesaplar)
+    musait_text = "\n".join(musait_hesaplar) if musait_hesaplar else "Yok"
     mesgul_text = "\n".join(mesgul_hesaplar)
 
     return f"""KABUS RENT
