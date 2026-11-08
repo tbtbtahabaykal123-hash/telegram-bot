@@ -15,22 +15,23 @@ def get_message_text():
     now_tr = datetime.now(tz_tr)
     time_str = now_tr.strftime('%d.%m.%Y %H:%M:%S')
 
-    musait_hesaplar = []
+    musait_hesaplar = [
+        "[Hesap 1](https://t.me/kabusxkira/3)",
+        "[Hesap 4](https://t.me/kabusxkira/14)",
+        "[Hesap 8](https://t.me/kabusxkira/40)"
+    ]
     
     mesgul_hesaplar = [
-        "[Hesap 1](https://t.me/kabusxkira/3) - 24s 00dk 00sn kaldı",
         "[Hesap 2](https://t.me/kabusxkira/10) (Ekstra Gece Paketi)",
         "[Hesap 3](https://t.me/kabusxkira/12) (Ekstra Gece Paketi)",
-        "[Hesap 4](https://t.me/kabusxkira/14) - 24s 00dk 00sn kaldı",
         "[Hesap 5](https://t.me/kabusxkira/19) (Gece Paketi)",
         "[Hesap 6](https://t.me/kabusxkira/22) (Gece Paketi)",
         "[Hesap 7](https://t.me/kabusxkira/34) - 24s 00dk 00sn kaldı",
-        "[Hesap 8](https://t.me/kabusxkira/40) (Gece Paketi)",
         "[Hesap 9](https://t.me/kabusxkira/49) (Gece Paketi)"
     ]
 
     musait_text = "\n".join(musait_hesaplar) if musait_hesaplar else "Yok"
-    mesgul_text = "\n".join(mesgul_hesaplar)
+    mesgul_text = "\n".join(mesgul_hesaplar) if mesgul_hesaplar else "Yok"
 
     return f"""KABUS RENT
 
