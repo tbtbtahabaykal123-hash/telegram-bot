@@ -58,4 +58,6 @@ def update_telegram_message():
         print("HATA: BOT_TOKEN bulunamadı!")
         return {"error": "Token yok"}
 
-    url = f"
+    url = f"https://api.telegram.org/bot{BOT_TOKEN}/editMessageText"
+    payload = {
+        "chat_id
