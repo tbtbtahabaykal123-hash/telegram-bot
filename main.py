@@ -16,18 +16,18 @@ def get_message_text():
     time_str = now_tr.strftime('%d.%m.%Y %H:%M:%S')
 
     musait_hesaplar = [
-        "[Hesap 1](https://t.me/kabusxkira/3)"
+        "[Hesap 1](https://t.me/kabusxkira/3)",
+        "[Hesap 2](https://t.me/kabusxkira/10)",
+        "[Hesap 3](https://t.me/kabusxkira/12)",
+        "[Hesap 4](https://t.me/kabusxkira/14)",
+        "[Hesap 5](https://t.me/kabusxkira/19)",
+        "[Hesap 6](https://t.me/kabusxkira/22)",
+        "[Hesap 8](https://t.me/kabusxkira/40)",
+        "[Hesap 9](https://t.me/kabusxkira/49)"
     ]
     
     mesgul_hesaplar = [
-        "[Hesap 2](https://t.me/kabusxkira/10) (Gece Paketi)",
-        "[Hesap 3](https://t.me/kabusxkira/12) (Gece Paketi)",
-        "[Hesap 4](https://t.me/kabusxkira/14) (Gece Paketi)",
-        "[Hesap 5](https://t.me/kabusxkira/19) (Gece Paketi)",
-        "[Hesap 6](https://t.me/kabusxkira/22) (Gece Paketi)",
-        "[Hesap 7](https://t.me/kabusxkira/34) (Gece Paketi)",
-        "[Hesap 8](https://t.me/kabusxkira/40) (Gece Paketi)",
-        "[Hesap 9](https://t.me/kabusxkira/49) (Gece Paketi)"
+        "[Hesap 7](https://t.me/kabusxkira/34) (Gece Paketi)"
     ]
 
     musait_text = "\n".join(musait_hesaplar) if musait_hesaplar else "Yok"
