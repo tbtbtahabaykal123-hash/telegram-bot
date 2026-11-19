@@ -7,7 +7,7 @@ from http.server import HTTPServer, BaseHTTPRequestHandler
 from threading import Thread
 
 BOT_TOKEN = "9180537800:AAFE0VCxfBhacAiCprvpgQUXZf-gbot0LiQ"
-CHANNEL_ID = "@kabusxkira"
+CHANNEL_ID = "@kabusxdesh"
 MESSAGE_ID = 65
 
 def get_message_text():
@@ -16,18 +16,18 @@ def get_message_text():
     time_str = now_tr.strftime('%d.%m.%Y %H:%M:%S')
 
     musait_hesaplar = [
-        "[Hesap 1](https://t.me/kabusxkira/3)",
-        "[Hesap 2](https://t.me/kabusxkira/10)",
-        "[Hesap 3](https://t.me/kabusxkira/12)",
-        "[Hesap 4](https://t.me/kabusxkira/14)",
-        "[Hesap 5](https://t.me/kabusxkira/19)",
-        "[Hesap 6](https://t.me/kabusxkira/22)",
-        "[Hesap 8](https://t.me/kabusxkira/40)",
-        "[Hesap 9](https://t.me/kabusxkira/49)"
+        "[Hesap 1](https://t.me/kabusxdesh/3)",
+        "[Hesap 2](https://t.me/kabusxdesh/10)",
+        "[Hesap 3](https://t.me/kabusxdesh/12)",
+        "[Hesap 4](https://t.me/kabusxdesh/14)",
+        "[Hesap 5](https://t.me/kabusxdesh/19)",
+        "[Hesap 6](https://t.me/kabusxdesh/22)",
+        "[Hesap 8](https://t.me/kabusxdesh/40)",
+        "[Hesap 9](https://t.me/kabusxdesh/49)"
     ]
     
     mesgul_hesaplar = [
-        "[Hesap 7](https://t.me/kabusxkira/34) (Gece Paketi)"
+        "[Hesap 7](https://t.me/kabusxdesh/34) (Gece Paketi)"
     ]
 
     musait_text = "\n".join(musait_hesaplar) if musait_hesaplar else "Yok"
