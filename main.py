@@ -18,19 +18,18 @@ def get_message_text():
     time_str = now_tr.strftime("%d.%m.%Y %H:%M:%S")
 
     musait_hesaplar = [
+        "[Hesap 1](https://t.me/kabusxdesh/3)",
+        "[Hesap 2](https://t.me/kabusxdesh/10)",
+        "[Hesap 3](https://t.me/kabusxdesh/12)",
         "[Hesap 4](https://t.me/kabusxdesh/14)",
+        "[Hesap 5](https://t.me/kabusxdesh/19)",
+        "[Hesap 6](https://t.me/kabusxdesh/22)",
+        "[Hesap 7](https://t.me/kabusxdesh/34)",
         "[Hesap 8](https://t.me/kabusxdesh/40)",
+        "[Hesap 9](https://t.me/kabusxdesh/49)",
     ]
 
-    mesgul_hesaplar = [
-        "[Hesap 1](https://t.me/kabusxdesh/3) (Gece Paketi)",
-        "[Hesap 2](https://t.me/kabusxdesh/10) (Ekstra Gece Paketi)",
-        "[Hesap 3](https://t.me/kabusxdesh/12) (Gece Paketi)",
-        "[Hesap 5](https://t.me/kabusxdesh/19) (Gece Paketi)",
-        "[Hesap 6](https://t.me/kabusxdesh/22) (Ekstra Gece Paketi)",
-        "[Hesap 7](https://t.me/kabusxdesh/34) (Gece Paketi)",
-        "[Hesap 9](https://t.me/kabusxdesh/49) (Gece Paketi)",
-    ]
+    mesgul_hesaplar = []
 
     musait_text = "\n".join(musait_hesaplar) if musait_hesaplar else "Yok"
     mesgul_text = "\n".join(mesgul_hesaplar) if mesgul_hesaplar else "Yok"
