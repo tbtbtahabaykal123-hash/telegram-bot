@@ -1,10 +1,10 @@
-import json
 import os
+import json
 import time
-import urllib.error
 import urllib.request
-from datetime import datetime, timedelta, timezone
-from http.server import BaseHTTPRequestHandler, HTTPServer
+import urllib.error
+from datetime import datetime, timezone, timedelta
+from http.server import HTTPServer, BaseHTTPRequestHandler
 from threading import Thread
 
 BOT_TOKEN = os.environ.get("BOT_TOKEN", "9180537800:AAFE0VCxfBhacAiCprvpgQUXZf-gbot0LiQ")
@@ -12,7 +12,7 @@ CHANNEL_ID = "@kabusxdesh"
 MESSAGE_ID = 65
 
 
-def get_message_text() -> str:
+def get_message_text():
     tz_tr = timezone(timedelta(hours=3))
     now_tr = datetime.now(tz_tr)
     time_str = now_tr.strftime("%d.%m.%Y %H:%M:%S")
@@ -29,7 +29,7 @@ def get_message_text() -> str:
         "[Hesap 9](https://t.me/kabusxdesh/49)",
     ]
 
-    mesgul_hesaplar: list[str] = []
+    mesgul_hesaplar = []
 
     musait_text = "\n".join(musait_hesaplar) if musait_hesaplar else "Yok"
     mesgul_text = "\n".join(mesgul_hesaplar) if mesgul_hesaplar else "Yok"
@@ -51,18 +51,18 @@ def get_message_text() -> str:
     )
 
 
-def update_telegram_message() -> dict:
+def update_telegram_message():
     if not BOT_TOKEN:
-        print("HATA: BOT_TOKEN tanımlı değil.", flush=True)
-        return {"ok": False, "error": "BOT_TOKEN eksik"}
+        print("HATA: BOT_TOKEN bulunamadi!", flush=True)
+        return {"ok": False, "error": "Token yok"}
 
-    url = f"https://api.telegram.org/bot{BOT_TOKEN}/editMessageText"
+    url = "https://api.telegram.org/bot" + BOT_TOKEN + "/editMessageText"
     payload = {
         "chat_id": CHANNEL_ID,
         "message_id": MESSAGE_ID,
         "text": get_message_text(),
         "parse_mode": "Markdown",
-        "link_preview_options": {"is_disabled": True},
+        "disable_web_page_preview": True,
     }
 
     data = json.dumps(payload).encode("utf-8")
@@ -70,14 +70,4 @@ def update_telegram_message() -> dict:
         url,
         data=data,
         headers={"Content-Type": "application/json"},
-        method="POST",
-    )
-
-    try:
-        with urllib.request.urlopen(req, timeout=15) as response:
-            res = json.loads(response.read().decode("utf-8"))
-            print("Telegram Yanıtı:", res, flush=True)
-            return res
-    except urllib.error.HTTPError as e:
-        err_body = e.read().decode("utf-8", errors="replace")
         
