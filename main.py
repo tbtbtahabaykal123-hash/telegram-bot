@@ -18,18 +18,19 @@ def get_message_text():
     time_str = now_tr.strftime("%d.%m.%Y %H:%M:%S")
 
     musait_hesaplar = [
-        "[Hesap 1](https://t.me/kabusxdesh/3)",
         "[Hesap 2](https://t.me/kabusxdesh/10)",
-        "[Hesap 3](https://t.me/kabusxdesh/12)",
-        "[Hesap 4](https://t.me/kabusxdesh/14)",
-        "[Hesap 5](https://t.me/kabusxdesh/19)",
         "[Hesap 6](https://t.me/kabusxdesh/22)",
-        "[Hesap 7](https://t.me/kabusxdesh/34)",
-        "[Hesap 8](https://t.me/kabusxdesh/40)",
-        "[Hesap 9](https://t.me/kabusxdesh/49)",
     ]
 
-    mesgul_hesaplar = []
+    mesgul_hesaplar = [
+        "[Hesap 1](https://t.me/kabusxdesh/3) (Gece Paketi)",
+        "[Hesap 3](https://t.me/kabusxdesh/12) (Gece Paketi)",
+        "[Hesap 4](https://t.me/kabusxdesh/14) (Gece Paketi)",
+        "[Hesap 5](https://t.me/kabusxdesh/19) (Gece Paketi)",
+        "[Hesap 7](https://t.me/kabusxdesh/34) (Gece Paketi)",
+        "[Hesap 8](https://t.me/kabusxdesh/40) (Gece Paketi)",
+        "[Hesap 9](https://t.me/kabusxdesh/49) (Gece Paketi)",
+    ]
 
     musait_text = "\n".join(musait_hesaplar) if musait_hesaplar else "Yok"
     mesgul_text = "\n".join(mesgul_hesaplar) if mesgul_hesaplar else "Yok"
@@ -70,4 +71,50 @@ def update_telegram_message():
         url,
         data=data,
         headers={"Content-Type": "application/json"},
-        
+        method="POST",
+    )
+
+    try:
+        with urllib.request.urlopen(req, timeout=15) as response:
+            res = json.loads(response.read().decode("utf-8"))
+            print("Telegram Yaniti:", res, flush=True)
+            return res
+    except urllib.error.HTTPError as e:
+        err_body = e.read().decode("utf-8", errors="replace")
+        print("Telegram HTTP Hatasi:", e.code, err_body, flush=True)
+        return {"ok": False, "status": e.code, "detail": err_body}
+    except Exception as e:
+        print("Genel Hata:", e, flush=True)
+        return {"ok": False, "error": str(e)}
+
+
+def auto_loop():
+    time.sleep(5)
+    update_telegram_message()
+    while True:
+        time.sleep(60)
+        update_telegram_message()
+
+
+class SimpleHandler(BaseHTTPRequestHandler):
+    def do_GET(self):
+        status = update_telegram_message()
+        self.send_response(200)
+        self.send_header("Content-Type", "text/plain; charset=utf-8")
+        self.end_headers()
+        self.wfile.write(("Durum: " + str(status)).encode("utf-8"))
+
+    def log_message(self, format, *args):
+        return
+
+
+def run_server():
+    Thread(target=auto_loop, daemon=True).start()
+    port = int(os.environ.get("PORT", 10000))
+    server = HTTPServer(("0.0.0.0", port), SimpleHandler)
+    print("Sunucu portta calisiyor:", port, flush=True)
+    server.serve_forever()
+
+
+if __name__ == "__main__":
+    run_server()
